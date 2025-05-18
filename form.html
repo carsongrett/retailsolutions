@@ -12,11 +12,10 @@
     </header>
     <nav>
         <a href="index.html">Home</a>
-        <a href="form.html">Find a Broker</a>
-        <a href="broker_request.html">Broker Join</a>
+        <a href="form.html">Get Matched with a Broker</a>
         <a href="admin.html">Admin</a>
-        <a href="privacy.html">Privacy Policy</a>
     </nav>
+    <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;">Join as a Broker</button>
     <main>
         <section class="form-container">
             <form id="tenantForm">
@@ -26,7 +25,19 @@
                 </div>
                 <div class="form-group">
                     <label for="industry">Industry</label>
-                    <input type="text" id="industry" name="industry" required>
+                    <select id="industry" name="industry" required>
+                        <option value="">Select...</option>
+                        <option value="Food Service">Food Service</option>
+                        <option value="Apparel">Apparel</option>
+                        <option value="Health & Wellness">Health & Wellness</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Services">Services</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Home Goods">Home Goods</option>
+                        <option value="Specialty">Specialty</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="city">City</label>
@@ -84,6 +95,37 @@
 
         document.getElementById('tenantForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            // Validation
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const cityRegex = /^[A-Za-z\s\-']+$/;
+            const stateRegex = /^[A-Za-z]{2}$/;
+            const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+            const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            let valid = true;
+            let msg = '';
+            if (!cityRegex.test(city)) {
+                valid = false;
+                msg += 'Please enter a valid city.\n';
+            }
+            if (!stateRegex.test(state)) {
+                valid = false;
+                msg += 'State must be a 2-letter code (e.g., NY).\n';
+            }
+            if (!phoneRegex.test(phone)) {
+                valid = false;
+                msg += 'Please enter a valid phone number (e.g., 555-555-5555).\n';
+            }
+            if (!emailRegex.test(email)) {
+                valid = false;
+                msg += 'Please enter a valid email address.\n';
+            }
+            if (!valid) {
+                document.getElementById('formMessage').textContent = msg;
+                return;
+            }
             const data = {
                 businessName: document.getElementById('businessName').value,
                 industry: document.getElementById('industry').value,
@@ -106,6 +148,10 @@
                 document.getElementById('formMessage').textContent = 'Error submitting form. Please try again.';
             }
         });
+
+        document.getElementById('joinBrokerBtn').onclick = function() {
+            window.location.href = 'broker_request.html';
+        };
     </script>
 </body>
 </html> 

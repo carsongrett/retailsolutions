@@ -12,11 +12,10 @@
     </header>
     <nav>
         <a href="index.html">Home</a>
-        <a href="form.html">Find a Broker</a>
-        <a href="broker_request.html">Broker Join</a>
+        <a href="form.html">Get Matched with a Broker</a>
         <a href="admin.html">Admin</a>
-        <a href="privacy.html">Privacy Policy</a>
     </nav>
+    <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;">Join as a Broker</button>
     <main>
         <section class="form-container">
             <h2>Your Privacy Matters</h2>
@@ -28,5 +27,10 @@
     <footer>
         <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
     </footer>
+    <script>
+    document.getElementById('joinBrokerBtn').onclick = function() {
+        window.location.href = 'broker_request.html';
+    };
+    </script>
 </body>
 </html> 
