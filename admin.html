@@ -13,6 +13,7 @@
     <nav>
         <a href="index.html">Home</a>
         <a href="form.html">Find a Broker</a>
+        <a href="broker_request.html">Broker Join</a>
         <a href="admin.html">Admin</a>
         <a href="privacy.html">Privacy Policy</a>
     </nav>
@@ -38,6 +39,8 @@
             <div id="tenantList">Loading...</div>
             <h2 style="margin-top:2rem;">Mock Broker List</h2>
             <div class="broker-list" id="adminBrokerList"></div>
+            <h2 style="margin-top:2rem;">Broker Requests</h2>
+            <div id="brokerRequests">Loading...</div>
         </section>
     </main>
     <footer>
@@ -54,7 +57,10 @@
             collection,
             query,
             orderBy,
-            getDocs 
+            getDocs,
+            doc,
+            setDoc,
+            deleteDoc
         } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
         // Mock broker data (same as brokers.html)
@@ -86,12 +92,14 @@
         const loginMessage = document.getElementById('loginMessage');
         const tenantList = document.getElementById('tenantList');
         const logoutBtn = document.getElementById('logoutBtn');
+        const brokerRequests = document.getElementById('brokerRequests');
 
         function showDashboard() {
             loginSection.style.display = 'none';
             dashboardSection.style.display = 'block';
             renderBrokers();
             loadTenants();
+            loadBrokerRequests();
         }
         function showLogin() {
             loginSection.style.display = 'block';
@@ -148,6 +156,71 @@
                 }).join('');
             } catch (err) {
                 tenantList.textContent = 'Error loading tenants: ' + err.message;
+            }
+        }
+
+        // Load broker requests from Firestore
+        async function loadBrokerRequests() {
+            brokerRequests.textContent = 'Loading...';
+            try {
+                const q = query(collection(db, 'brokers_pending'), orderBy('submittedAt', 'desc'));
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) {
+                    brokerRequests.innerHTML = '<p>No broker requests yet.</p>';
+                    return;
+                }
+                brokerRequests.innerHTML = snapshot.docs.map(doc => {
+                    const b = doc.data();
+                    const id = doc.id;
+                    return `<div style="border-bottom:1px solid #eee; margin-bottom:1rem; padding-bottom:1rem;">
+                        <strong>${b.fullName}</strong> (${b.companyName})<br>
+                        <strong>Email:</strong> ${b.email}<br>
+                        <strong>Phone:</strong> ${b.phone}<br>
+                        <strong>Office:</strong> ${b.officeCity}, ${b.officeState}<br>
+                        <strong>Service Area:</strong> ${b.serviceArea}<br>
+                        <strong>Industries:</strong> ${b.industries.join(', ')}<br>
+                        <strong>License #:</strong> ${b.licenseNumber || 'N/A'}<br>
+                        <strong>Bio:</strong> ${b.bio}<br>
+                        <strong>Website:</strong> ${b.website || 'N/A'}<br>
+                        <small>Submitted: ${new Date(b.submittedAt).toLocaleString()}</small><br>
+                        <button class="cta-button" onclick="window.approveBroker('${id}')">Approve</button>
+                        <button class="cta-button" onclick="window.rejectBroker('${id}')" style="background:#c0392b;">Reject</button>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                brokerRequests.textContent = 'Error loading broker requests: ' + err.message;
+            }
+        }
+
+        // Approve broker
+        window.approveBroker = async function(id) {
+            try {
+                const docRef = doc(db, 'brokers_pending', id);
+                const docSnap = await getDocs(query(collection(db, 'brokers_pending')));
+                let brokerData;
+                docSnap.forEach(d => { if (d.id === id) brokerData = d.data(); });
+                if (!brokerData) throw new Error('Broker not found');
+                await setDoc(doc(db, 'brokers', id), brokerData);
+                await deleteDoc(docRef);
+                loadBrokerRequests();
+            } catch (err) {
+                alert('Error approving broker: ' + err.message);
+            }
+        }
+
+        // Reject broker
+        window.rejectBroker = async function(id) {
+            try {
+                const docRef = doc(db, 'brokers_pending', id);
+                const docSnap = await getDocs(query(collection(db, 'brokers_pending')));
+                let brokerData;
+                docSnap.forEach(d => { if (d.id === id) brokerData = d.data(); });
+                if (!brokerData) throw new Error('Broker not found');
+                await setDoc(doc(db, 'rejected_brokers', id), brokerData);
+                await deleteDoc(docRef);
+                loadBrokerRequests();
+            } catch (err) {
+                alert('Error rejecting broker: ' + err.message);
             }
         }
     </script>
