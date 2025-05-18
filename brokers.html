@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Brokers - Retail Solutions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Matching Brokers</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="form.html">Find a Broker</a>
+        <a href="admin.html">Admin</a>
+        <a href="privacy.html">Privacy Policy</a>
+    </nav>
+    <main>
+        <section class="form-container">
+            <h2>Thank you for your submission!</h2>
+            <p>Here are some brokers who serve your area:</p>
+        </section>
+        <section class="broker-list" id="brokerList"></section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+    <script src="app.js"></script>
+    <script>
+    // Mock broker data
+    const brokers = [
+        {
+            name: "Jane Smith",
+            city: "New York",
+            zip: "10001",
+            industries: ["Fashion", "Food", "Tech"],
+            email: "jane.smith@brokerco.com"
+        },
+        {
+            name: "Mike Johnson",
+            city: "Los Angeles",
+            zip: "90001",
+            industries: ["Fitness", "Beauty", "Health"],
+            email: "mike.johnson@brokerco.com"
+        },
+        {
+            name: "Sara Lee",
+            city: "Chicago",
+            zip: "60601",
+            industries: ["Food", "Retail"],
+            email: "sara.lee@brokerco.com"
+        },
+        {
+            name: "Carlos Martinez",
+            city: "New York",
+            zip: "10002",
+            industries: ["Tech", "Services"],
+            email: "carlos.martinez@brokerco.com"
+        },
+        {
+            name: "Emily Chen",
+            city: "San Francisco",
+            zip: "94102",
+            industries: ["Fashion", "Retail"],
+            email: "emily.chen@brokerco.com"
+        }
+    ];
+
+    // Get city/zip from query string
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param) || '';
+    }
+    const city = getQueryParam('city').toLowerCase();
+    const zip = getQueryParam('zip');
+
+    // Filter brokers by city or zip
+    const filtered = brokers.filter(broker =>
+        broker.city.toLowerCase() === city || broker.zip === zip
+    );
+
+    const brokerList = document.getElementById('brokerList');
+    if (filtered.length === 0) {
+        brokerList.innerHTML = '<p>No brokers found for your area. Please check back later.</p>';
+    } else {
+        brokerList.innerHTML = filtered.map(broker => `
+            <div class="broker-card">
+                <h3>${broker.name}</h3>
+                <p><strong>City:</strong> ${broker.city} (${broker.zip})</p>
+                <p><strong>Industries:</strong> ${broker.industries.join(', ')}</p>
+                <p><strong>Email:</strong> <a href="mailto:${broker.email}">${broker.email}</a></p>
+            </div>
+        `).join('');
+    }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Retail Solutions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="form.html">Find a Broker</a>
+        <a href="admin.html">Admin</a>
+        <a href="privacy.html">Privacy Policy</a>
+    </nav>
+    <main>
+        <section class="form-container" id="loginSection">
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminEmail">Email</label>
+                    <input type="email" id="adminEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" required>
+                </div>
+                <button type="submit" class="cta-button">Login</button>
+            </form>
+            <div id="loginMessage" style="margin-top:1rem;"></div>
+        </section>
+        <section class="form-container" id="dashboardSection" style="display:none;">
+            <button id="logoutBtn" class="cta-button" style="float:right;">Logout</button>
+            <h2>Tenant Submissions</h2>
+            <div id="tenantList">Loading...</div>
+            <h2 style="margin-top:2rem;">Mock Broker List</h2>
+            <div class="broker-list" id="adminBrokerList"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+    <script type="module">
+        import { auth, db } from './app.js';
+        import { 
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+        import { 
+            collection,
+            query,
+            orderBy,
+            getDocs 
+        } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+        // Mock broker data (same as brokers.html)
+        const brokers = [
+            { name: "Jane Smith", city: "New York", zip: "10001", industries: ["Fashion", "Food", "Tech"], email: "jane.smith@brokerco.com" },
+            { name: "Mike Johnson", city: "Los Angeles", zip: "90001", industries: ["Fitness", "Beauty", "Health"], email: "mike.johnson@brokerco.com" },
+            { name: "Sara Lee", city: "Chicago", zip: "60601", industries: ["Food", "Retail"], email: "sara.lee@brokerco.com" },
+            { name: "Carlos Martinez", city: "New York", zip: "10002", industries: ["Tech", "Services"], email: "carlos.martinez@brokerco.com" },
+            { name: "Emily Chen", city: "San Francisco", zip: "94102", industries: ["Fashion", "Retail"], email: "emily.chen@brokerco.com" }
+        ];
+
+        // Render broker list
+        function renderBrokers() {
+            const adminBrokerList = document.getElementById('adminBrokerList');
+            adminBrokerList.innerHTML = brokers.map(broker => `
+                <div class="broker-card">
+                    <h3>${broker.name}</h3>
+                    <p><strong>City:</strong> ${broker.city} (${broker.zip})</p>
+                    <p><strong>Industries:</strong> ${broker.industries.join(', ')}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${broker.email}">${broker.email}</a></p>
+                </div>
+            `).join('');
+        }
+
+        // Auth and dashboard logic
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const loginForm = document.getElementById('loginForm');
+        const loginMessage = document.getElementById('loginMessage');
+        const tenantList = document.getElementById('tenantList');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function showDashboard() {
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            renderBrokers();
+            loadTenants();
+        }
+        function showLogin() {
+            loginSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+        }
+
+        // Listen for auth state
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        });
+
+        // Login form submit
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                loginMessage.textContent = 'Login failed: ' + err.message;
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async function() {
+            await signOut(auth);
+        });
+
+        // Load tenants from Firestore
+        async function loadTenants() {
+            tenantList.textContent = 'Loading...';
+            try {
+                const q = query(collection(db, 'tenants'), orderBy('submittedAt', 'desc'));
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) {
+                    tenantList.innerHTML = '<p>No tenant submissions yet.</p>';
+                    return;
+                }
+                tenantList.innerHTML = snapshot.docs.map(doc => {
+                    const t = doc.data();
+                    return `<div style="border-bottom:1px solid #eee; margin-bottom:1rem; padding-bottom:1rem;">
+                        <strong>${t.businessName}</strong> (${t.industry})<br>
+                        <strong>Location:</strong> ${t.city}, ${t.state} ${t.zip}<br>
+                        <strong>Lease Status:</strong> ${t.leaseStatus}<br>
+                        <strong>Size:</strong> ${t.size} sq ft<br>
+                        <strong>Budget:</strong> ${t.budget || 'N/A'}<br>
+                        <strong>Contact:</strong> ${t.contactName}, ${t.email}, ${t.phone}<br>
+                        <small>Submitted: ${new Date(t.submittedAt).toLocaleString()}</small>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                tenantList.textContent = 'Error loading tenants: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html> 
