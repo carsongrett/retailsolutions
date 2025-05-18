@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Application - Retail Solutions</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Broker Application</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="form.html">Find a Broker</a>
+        <a href="broker_request.html">Broker Join</a>
+        <a href="admin.html">Admin</a>
+        <a href="privacy.html">Privacy Policy</a>
+    </nav>
+    <main>
+        <section class="form-container">
+            <form id="brokerForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" name="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="officeCity">Office City</label>
+                    <input type="text" id="officeCity" name="officeCity" required>
+                </div>
+                <div class="form-group">
+                    <label for="officeState">Office State</label>
+                    <input type="text" id="officeState" name="officeState" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceArea">Service Area (ZIPs or Metro Areas)</label>
+                    <input type="text" id="serviceArea" name="serviceArea" required placeholder="e.g. 10001, 10002 or NYC Metro">
+                </div>
+                <div class="form-group">
+                    <label for="industries">Industries Specialized In (comma separated)</label>
+                    <input type="text" id="industries" name="industries" required placeholder="e.g. Retail, Food, Tech">
+                </div>
+                <div class="form-group">
+                    <label for="licenseNumber">License Number (optional)</label>
+                    <input type="text" id="licenseNumber" name="licenseNumber">
+                </div>
+                <div class="form-group">
+                    <label for="bio">Short Bio</label>
+                    <textarea id="bio" name="bio" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="website">Website URL (optional)</label>
+                    <input type="url" id="website" name="website">
+                </div>
+                <button type="submit" class="cta-button">Submit Application</button>
+            </form>
+            <div id="formMessage" style="margin-top:1rem;"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+    <script type="module">
+        import { auth, db } from './app.js';
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+        const brokerForm = document.getElementById('brokerForm');
+        const formMessage = document.getElementById('formMessage');
+
+        brokerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            formMessage.textContent = '';
+            const data = {
+                fullName: brokerForm.fullName.value,
+                companyName: brokerForm.companyName.value,
+                email: brokerForm.email.value,
+                phone: brokerForm.phone.value,
+                officeCity: brokerForm.officeCity.value,
+                officeState: brokerForm.officeState.value,
+                serviceArea: brokerForm.serviceArea.value,
+                industries: brokerForm.industries.value.split(',').map(s => s.trim()),
+                licenseNumber: brokerForm.licenseNumber.value,
+                bio: brokerForm.bio.value,
+                website: brokerForm.website.value,
+                submittedAt: new Date().toISOString(),
+                status: 'pending'
+            };
+            const password = brokerForm.password.value;
+            try {
+                // Create Firebase Auth user
+                await createUserWithEmailAndPassword(auth, data.email, password);
+                // Save broker application to Firestore
+                await addDoc(collection(db, 'brokers_pending'), data);
+                brokerForm.reset();
+                formMessage.textContent = 'Thanks! Your request is under review.';
+                brokerForm.style.display = 'none';
+            } catch (err) {
+                formMessage.textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html> 
