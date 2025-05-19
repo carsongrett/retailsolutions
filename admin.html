@@ -7,6 +7,47 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .dashboard-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--green);
+            border-bottom: 3px solid var(--green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tenant-match-card {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .broker-match-dropdown {
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -20,13 +61,15 @@
             <a href="index.html"><i class="fas fa-home"></i> Home</a>
             <a href="form.html"><i class="fas fa-handshake"></i> Get Matched with a Broker</a>
             <a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a>
+            <a href="tenant_login.html"><i class="fas fa-user"></i> Tenant Login</a>
+            <a href="broker_login.html"><i class="fas fa-user-tie"></i> Broker Login</a>
             <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
         </div>
     </nav>
-    <button class="cta-button" id="joinBrokerBtn"><i class="fas fa-user-tie"></i> Brokers – Join Here</button>
+    <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;"><i class="fas fa-user-tie"></i> Brokers – Join Here</button>
     <main>
         <section class="form-container" id="loginSection">
-            <h2>Admin Login</h2>
+            <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="adminEmail">Email</label>
@@ -41,19 +84,76 @@
             <div id="loginMessage" style="margin-top:1rem;"></div>
         </section>
         <section class="form-container" id="dashboardSection" style="display:none;">
-            <button id="logoutBtn" class="cta-button" style="float:right;">Logout</button>
-            <h2>Tenant Submissions</h2>
-            <div id="tenantList">Loading...</div>
-            <h2 style="margin-top:2rem;">Approved Brokers</h2>
-            <div id="approvedBrokers">Loading...</div>
-            <h2 style="margin-top:2rem;">Pending Broker Requests</h2>
-            <div id="brokerRequests">Loading...</div>
-            <h2 style="margin-top:2rem;">Denied Broker Requests</h2>
-            <div id="deniedBrokers">Loading...</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+                <button id="logoutBtn" class="cta-button">Logout</button>
+            </div>
+            
+            <!-- Admin Dashboard Tabs -->
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="tenants">Tenant Submissions</button>
+                <button class="tab-btn" data-tab="assignments">Tenant-Broker Assignments</button>
+                <button class="tab-btn" data-tab="approved">Approved Brokers</button>
+                <button class="tab-btn" data-tab="pending">Pending Broker Requests</button>
+                <button class="tab-btn" data-tab="denied">Denied Broker Requests</button>
+            </div>
+            
+            <!-- Tenants Tab -->
+            <div class="tab-content active" id="tenantsTab">
+                <h3>Tenant Submissions</h3>
+                <div id="tenantList">Loading...</div>
+            </div>
+            
+            <!-- Assignments Tab -->
+            <div class="tab-content" id="assignmentsTab">
+                <h3>Tenant-Broker Assignments</h3>
+                <div id="assignmentsList">
+                    <p>Select tenants from the list and assign them to brokers.</p>
+                </div>
+            </div>
+            
+            <!-- Approved Brokers Tab -->
+            <div class="tab-content" id="approvedTab">
+                <h3>Approved Brokers</h3>
+                <div id="approvedBrokers">Loading...</div>
+            </div>
+            
+            <!-- Pending Brokers Tab -->
+            <div class="tab-content" id="pendingTab">
+                <h3>Pending Broker Requests</h3>
+                <div id="brokerRequests">Loading...</div>
+            </div>
+            
+            <!-- Denied Brokers Tab -->
+            <div class="tab-content" id="deniedTab">
+                <h3>Denied Broker Requests</h3>
+                <div id="deniedBrokers">Loading...</div>
+            </div>
         </section>
     </main>
     <footer>
-        <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-building"></i> Retail Solutions</h4>
+                <p>Connecting businesses with the right commercial real estate brokers since 2024.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="form.html">Get Matched</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> info@retailsolutions.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+        </div>
     </footer>
     <script type="module">
         import { auth, db } from './app.js';
@@ -68,18 +168,13 @@
             orderBy,
             getDocs,
             doc,
+            getDoc,
             setDoc,
-            deleteDoc
+            deleteDoc,
+            addDoc,
+            where,
+            serverTimestamp
         } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
-
-        // Mock broker data (same as brokers.html)
-        const brokers = [
-            { name: "Jane Smith", city: "New York", zip: "10001", industries: ["Fashion", "Food", "Tech"], email: "jane.smith@brokerco.com" },
-            { name: "Mike Johnson", city: "Los Angeles", zip: "90001", industries: ["Fitness", "Beauty", "Health"], email: "mike.johnson@brokerco.com" },
-            { name: "Sara Lee", city: "Chicago", zip: "60601", industries: ["Food", "Retail"], email: "sara.lee@brokerco.com" },
-            { name: "Carlos Martinez", city: "New York", zip: "10002", industries: ["Tech", "Services"], email: "carlos.martinez@brokerco.com" },
-            { name: "Emily Chen", city: "San Francisco", zip: "94102", industries: ["Fashion", "Retail"], email: "emily.chen@brokerco.com" }
-        ];
 
         // Auth and dashboard logic
         const loginSection = document.getElementById('loginSection');
@@ -87,13 +182,33 @@
         const loginForm = document.getElementById('loginForm');
         const loginMessage = document.getElementById('loginMessage');
         const tenantList = document.getElementById('tenantList');
+        const assignmentsList = document.getElementById('assignmentsList');
         const logoutBtn = document.getElementById('logoutBtn');
         const brokerRequests = document.getElementById('brokerRequests');
+
+        // Tab Navigation
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to current button and tab
+                btn.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
 
         function showDashboard() {
             loginSection.style.display = 'none';
             dashboardSection.style.display = 'block';
             loadTenants();
+            loadAssignments();
             loadBrokerRequests();
             loadApprovedBrokers();
             loadDeniedBrokers();
@@ -129,6 +244,10 @@
             await signOut(auth);
         });
 
+        // Store for approved brokers and tenants
+        let approvedBrokersData = [];
+        let tenantsData = [];
+
         // Load tenants from Firestore
         async function loadTenants() {
             tenantList.textContent = 'Loading...';
@@ -139,8 +258,15 @@
                     tenantList.innerHTML = '<p>No tenant submissions yet.</p>';
                     return;
                 }
-                tenantList.innerHTML = snapshot.docs.map(doc => {
-                    const t = doc.data();
+                
+                tenantsData = snapshot.docs.map(doc => {
+                    return {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                });
+                
+                tenantList.innerHTML = tenantsData.map(t => {
                     return `<div style="border-bottom:1px solid #eee; margin-bottom:1rem; padding-bottom:1rem;">
                         <strong>${t.businessName}</strong> (${t.industry})<br>
                         <strong>Location:</strong> ${t.city}, ${t.state} ${t.zip}<br>
@@ -148,13 +274,165 @@
                         <strong>Size:</strong> ${t.size} sq ft<br>
                         <strong>Budget:</strong> ${t.budget || 'N/A'}<br>
                         <strong>Contact:</strong> ${t.contactName}, ${t.email}, ${t.phone}<br>
-                        <small>Submitted: ${new Date(t.submittedAt).toLocaleString()}</small>
+                        <small>Submitted: ${new Date(t.submittedAt).toLocaleString()}</small><br>
+                        <button class="cta-button" onclick="window.assignBroker('${t.id}')">Assign Broker</button>
                     </div>`;
                 }).join('');
             } catch (err) {
                 tenantList.textContent = 'Error loading tenants: ' + err.message;
             }
         }
+        
+        // Load and display tenant-broker assignments
+        async function loadAssignments() {
+            assignmentsList.textContent = 'Loading assignments...';
+            try {
+                const q = query(collection(db, 'tenant_assignments'), orderBy('assignedAt', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.empty) {
+                    assignmentsList.innerHTML = '<p>No tenant-broker assignments yet.</p>';
+                    return;
+                }
+                
+                let assignmentsHTML = '';
+                
+                for (const assignmentDoc of snapshot.docs) {
+                    const assignmentData = assignmentDoc.data();
+                    
+                    // Get tenant information
+                    const tenantRef = doc(db, 'tenants', assignmentData.tenantId);
+                    const tenantSnap = await getDoc(tenantRef);
+                    
+                    // Get broker information
+                    const brokerRef = doc(db, 'brokers', assignmentData.brokerId);
+                    const brokerSnap = await getDoc(brokerRef);
+                    
+                    if (tenantSnap.exists() && brokerSnap.exists()) {
+                        const tenant = tenantSnap.data();
+                        const broker = brokerSnap.data();
+                        
+                        assignmentsHTML += `
+                            <div class="tenant-match-card">
+                                <h4>Assignment ID: ${assignmentDoc.id}</h4>
+                                <div style="display:flex;flex-wrap:wrap;gap:2rem;margin-top:1rem;">
+                                    <div style="flex:1;min-width:250px;">
+                                        <h5>Tenant:</h5>
+                                        <p><strong>${tenant.businessName}</strong> (${tenant.industry})</p>
+                                        <p>${tenant.city}, ${tenant.state} ${tenant.zip}</p>
+                                        <p>${tenant.contactName}, ${tenant.email}</p>
+                                    </div>
+                                    <div style="flex:1;min-width:250px;">
+                                        <h5>Broker:</h5>
+                                        <p><strong>${broker.fullName}</strong> (${broker.companyName})</p>
+                                        <p>${broker.officeCity}, ${broker.officeState}</p>
+                                        <p>${broker.email}</p>
+                                    </div>
+                                </div>
+                                <p class="match-date">Assigned: ${new Date(assignmentData.assignedAt).toLocaleDateString()}</p>
+                                <button class="cta-button" onclick="window.removeAssignment('${assignmentDoc.id}')" style="background:#c0392b;">Remove Assignment</button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                assignmentsList.innerHTML = assignmentsHTML;
+            } catch (err) {
+                assignmentsList.textContent = 'Error loading assignments: ' + err.message;
+            }
+        }
+
+        // Assign broker to tenant
+        window.assignBroker = async function(tenantId) {
+            try {
+                // Get tenant details
+                const tenant = tenantsData.find(t => t.id === tenantId);
+                if (!tenant) throw new Error('Tenant not found');
+                
+                // If we don't have brokers data yet, load it
+                if (approvedBrokersData.length === 0) {
+                    const q = query(collection(db, 'brokers'));
+                    const snapshot = await getDocs(q);
+                    approvedBrokersData = snapshot.docs.map(doc => {
+                        return {
+                            id: doc.id,
+                            ...doc.data()
+                        };
+                    });
+                }
+                
+                // No brokers to assign
+                if (approvedBrokersData.length === 0) {
+                    alert('No approved brokers available to assign.');
+                    return;
+                }
+                
+                // Create broker select HTML
+                const brokerOptions = approvedBrokersData.map(broker => {
+                    return `<option value="${broker.id}">${broker.fullName} (${broker.companyName}) - ${broker.officeCity}, ${broker.officeState}</option>`;
+                }).join('');
+                
+                // Show assignment modal/prompt
+                const brokerSelect = prompt(
+                    `Assign a broker to ${tenant.businessName} (${tenant.city}, ${tenant.state}):\n\n` +
+                    `Available brokers:\n` +
+                    approvedBrokersData.map(b => `- ${b.fullName} (${b.companyName})\n`).join(''),
+                    ''
+                );
+                
+                if (brokerSelect === null) return; // User cancelled
+                
+                // Find selected broker
+                const brokerId = approvedBrokersData.find(b => 
+                    b.fullName.toLowerCase().includes(brokerSelect.toLowerCase()) || 
+                    b.email.toLowerCase() === brokerSelect.toLowerCase()
+                )?.id;
+                
+                if (!brokerId) {
+                    alert('Broker not found. Please enter a valid broker name or email.');
+                    return;
+                }
+                
+                // Check if this assignment already exists
+                const existingQ = query(
+                    collection(db, 'tenant_assignments'),
+                    where('tenantId', '==', tenantId),
+                    where('brokerId', '==', brokerId)
+                );
+                const existingSnapshot = await getDocs(existingQ);
+                
+                if (!existingSnapshot.empty) {
+                    alert('This tenant is already assigned to this broker.');
+                    return;
+                }
+                
+                // Create assignment
+                await addDoc(collection(db, 'tenant_assignments'), {
+                    tenantId: tenantId,
+                    brokerId: brokerId,
+                    assignedAt: new Date().toISOString(),
+                    assignedBy: auth.currentUser.email
+                });
+                
+                alert('Tenant successfully assigned to broker!');
+                loadAssignments();
+            } catch (err) {
+                alert('Error assigning broker: ' + err.message);
+            }
+        };
+        
+        // Remove tenant-broker assignment
+        window.removeAssignment = async function(assignmentId) {
+            if (!confirm('Are you sure you want to remove this assignment?')) return;
+            
+            try {
+                await deleteDoc(doc(db, 'tenant_assignments', assignmentId));
+                alert('Assignment removed successfully.');
+                loadAssignments();
+            } catch (err) {
+                alert('Error removing assignment: ' + err.message);
+            }
+        };
 
         // Load broker requests from Firestore
         async function loadBrokerRequests() {
@@ -175,11 +453,11 @@
                         <strong>Phone:</strong> ${b.phone}<br>
                         <strong>Office:</strong> ${b.officeCity}, ${b.officeState}<br>
                         <strong>Service Area:</strong> ${b.serviceArea}<br>
-                        <strong>Industries:</strong> ${b.industries.join(', ')}<br>
+                        <strong>Industries:</strong> ${b.industries ? b.industries.join(', ') : ''}<br>
                         <strong>License #:</strong> ${b.licenseNumber || 'N/A'}<br>
-                        <strong>Bio:</strong> ${b.bio}<br>
+                        <strong>Bio:</strong> ${b.bio || 'N/A'}<br>
                         <strong>Website:</strong> ${b.website || 'N/A'}<br>
-                        <small>Submitted: ${new Date(b.submittedAt).toLocaleString()}</small><br>
+                        <small>Submitted: ${b.submittedAt ? new Date(b.submittedAt).toLocaleString() : 'Unknown'}</small><br>
                         <button class="cta-button" onclick="window.approveBroker('${id}')">Approve</button>
                         <button class="cta-button" onclick="window.rejectBroker('${id}')" style="background:#c0392b;">Reject</button>
                     </div>`;
@@ -193,13 +471,20 @@
         window.approveBroker = async function(id) {
             try {
                 const docRef = doc(db, 'brokers_pending', id);
-                const docSnap = await getDocs(query(collection(db, 'brokers_pending')));
-                let brokerData;
-                docSnap.forEach(d => { if (d.id === id) brokerData = d.data(); });
+                const docSnap = await getDoc(docRef);
+                const brokerData = docSnap.data();
+                
                 if (!brokerData) throw new Error('Broker not found');
+                
                 await setDoc(doc(db, 'brokers', id), brokerData);
                 await deleteDoc(docRef);
+                
+                alert('Broker approved successfully!');
                 loadBrokerRequests();
+                loadApprovedBrokers();
+                
+                // Refresh approved brokers data
+                approvedBrokersData = [];
             } catch (err) {
                 alert('Error approving broker: ' + err.message);
             }
@@ -209,13 +494,17 @@
         window.rejectBroker = async function(id) {
             try {
                 const docRef = doc(db, 'brokers_pending', id);
-                const docSnap = await getDocs(query(collection(db, 'brokers_pending')));
-                let brokerData;
-                docSnap.forEach(d => { if (d.id === id) brokerData = d.data(); });
+                const docSnap = await getDoc(docRef);
+                const brokerData = docSnap.data();
+                
                 if (!brokerData) throw new Error('Broker not found');
+                
                 await setDoc(doc(db, 'rejected_brokers', id), brokerData);
                 await deleteDoc(docRef);
+                
+                alert('Broker request rejected.');
                 loadBrokerRequests();
+                loadDeniedBrokers();
             } catch (err) {
                 alert('Error rejecting broker: ' + err.message);
             }
@@ -228,13 +517,23 @@
             try {
                 const q = query(collection(db, 'brokers'));
                 const snapshot = await getDocs(q);
+                
+                // Store brokers data for assignment functionality
+                approvedBrokersData = snapshot.docs.map(doc => {
+                    return {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                });
+                
                 if (snapshot.empty) {
                     approvedBrokers.innerHTML = '<p>No approved brokers yet.</p>';
                     return;
                 }
+                
                 approvedBrokers.innerHTML = snapshot.docs.map(doc => {
                     const b = doc.data();
-                    return `<div style=\"border-bottom:1px solid #eee; margin-bottom:1rem; padding-bottom:1rem;\">
+                    return `<div style="border-bottom:1px solid #eee; margin-bottom:1rem; padding-bottom:1rem;">
                         <strong>${b.fullName}</strong> (${b.companyName})<br>
                         <strong>Email:</strong> ${b.email}<br>
                         <strong>Phone:</strong> ${b.phone}<br>

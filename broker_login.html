@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Login - Retail Solutions</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <i class="fas fa-building"></i>
+            <h1>Retail Solutions</h1>
+        </div>
+    </header>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="form.html"><i class="fas fa-handshake"></i> Get Matched with a Broker</a>
+            <a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a>
+            <a href="tenant_login.html"><i class="fas fa-user"></i> Tenant Login</a>
+            <a href="broker_login.html"><i class="fas fa-user-tie"></i> Broker Login</a>
+            <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+        </div>
+    </nav>
+    <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;"><i class="fas fa-user-tie"></i> Brokers – Join Here</button>
+    
+    <main>
+        <!-- Login Section -->
+        <section class="form-container" id="loginSection">
+            <h2><i class="fas fa-user-tie"></i> Broker Login</h2>
+            <form id="brokerLoginForm">
+                <div class="form-group">
+                    <label for="brokerEmail">Email</label>
+                    <input type="email" id="brokerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="brokerPassword">Password</label>
+                    <input type="password" id="brokerPassword" required>
+                </div>
+                <button type="submit" class="cta-button">Login</button>
+            </form>
+            <div id="loginMessage" style="margin-top:1rem;"></div>
+            <p style="margin-top:1rem;">
+                Not registered yet? <a href="broker_request.html">Apply as a broker</a>
+            </p>
+        </section>
+        
+        <!-- Dashboard Section (Hidden Until Login) -->
+        <section id="dashboardSection" style="display:none;">
+            <div class="form-container">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h2><i class="fas fa-user-circle"></i> Broker Dashboard</h2>
+                    <button id="logoutBtn" class="cta-button">Logout</button>
+                </div>
+                
+                <!-- Tabs for navigation -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="profile">My Profile</button>
+                    <button class="tab-btn" data-tab="matches">Tenant Matches</button>
+                </div>
+                
+                <!-- Profile Tab Content -->
+                <div class="tab-content active" id="profileTab">
+                    <h3>Your Information</h3>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company Name</label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required readonly>
+                            <span class="input-helper">Email cannot be changed</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <span class="input-helper">Ten digits only</span>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="officeCity">Office City</label>
+                            <input type="text" id="officeCity" name="officeCity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="officeState">Office State</label>
+                            <select id="officeState" name="officeState" required>
+                                <option value="">Select...</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <!-- More state options would be here -->
+                                <option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceArea">Service Area (ZIPs or Metro Areas)</label>
+                            <input type="text" id="serviceArea" name="serviceArea" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Industries you serve</label>
+                            <div id="industriesChecklist" class="industries-checklist">
+                                <label><input type="checkbox" name="industries" value="Food Service"> Food Service</label>
+                                <label><input type="checkbox" name="industries" value="Apparel"> Apparel</label>
+                                <label><input type="checkbox" name="industries" value="Health & Wellness"> Health & Wellness</label>
+                                <label><input type="checkbox" name="industries" value="Fitness"> Fitness</label>
+                                <label><input type="checkbox" name="industries" value="Services"> Services</label>
+                                <label><input type="checkbox" name="industries" value="Beauty"> Beauty</label>
+                                <label><input type="checkbox" name="industries" value="Electronics"> Electronics</label>
+                                <label><input type="checkbox" name="industries" value="Home Goods"> Home Goods</label>
+                                <label><input type="checkbox" name="industries" value="Specialty"> Specialty</label>
+                                <label><input type="checkbox" name="industries" value="Other"> Other</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="licenseNumber">License Number</label>
+                            <input type="text" id="licenseNumber" name="licenseNumber">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="website">Website URL</label>
+                            <input type="url" id="website" name="website">
+                        </div>
+                        <button type="submit" class="cta-button">Save Changes</button>
+                    </form>
+                    <div id="profileMessage" style="margin-top:1rem;"></div>
+                </div>
+                
+                <!-- Matches Tab Content -->
+                <div class="tab-content" id="matchesTab">
+                    <h3>Your Tenant Matches</h3>
+                    <div id="tenantMatchesList">
+                        <p>Loading matches...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-building"></i> Retail Solutions</h4>
+                <p>Connecting businesses with the right commercial real estate brokers since 2024.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="form.html">Get Matched</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> info@retailsolutions.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, db } from './app.js';
+        import { 
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+        import { 
+            collection,
+            doc,
+            getDoc,
+            updateDoc,
+            query,
+            where,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const brokerLoginForm = document.getElementById('brokerLoginForm');
+        const profileForm = document.getElementById('profileForm');
+        const loginMessage = document.getElementById('loginMessage');
+        const profileMessage = document.getElementById('profileMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const tenantMatchesList = document.getElementById('tenantMatchesList');
+
+        // Tab Navigation
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to current button and tab
+                btn.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        // Function to show dashboard or login based on auth state
+        function showDashboard() {
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            loadBrokerProfile();
+            loadTenantMatches();
+        }
+
+        function showLogin() {
+            loginSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+        }
+
+        // Listen for auth state changes
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Check if this user is a broker
+                try {
+                    const brokerRef = doc(db, 'brokers', user.uid);
+                    const brokerDoc = await getDoc(brokerRef);
+                    
+                    if (brokerDoc.exists()) {
+                        showDashboard();
+                    } else {
+                        // Not a broker, sign them out
+                        loginMessage.textContent = "This account is not registered as a broker.";
+                        await signOut(auth);
+                    }
+                } catch (error) {
+                    console.error("Error checking broker status:", error);
+                    loginMessage.textContent = "Error verifying account. Please try again.";
+                    await signOut(auth);
+                }
+            } else {
+                showLogin();
+            }
+        });
+
+        // Login form submit
+        brokerLoginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            loginMessage.textContent = '';
+            
+            const email = document.getElementById('brokerEmail').value;
+            const password = document.getElementById('brokerPassword').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                loginMessage.textContent = 'Login failed: ' + err.message;
+            }
+        });
+
+        // Load broker profile data
+        async function loadBrokerProfile() {
+            try {
+                const user = auth.currentUser;
+                const brokerRef = doc(db, 'brokers', user.uid);
+                const brokerDoc = await getDoc(brokerRef);
+                
+                if (brokerDoc.exists()) {
+                    const data = brokerDoc.data();
+                    
+                    // Fill form fields with broker data
+                    document.getElementById('fullName').value = data.fullName || '';
+                    document.getElementById('companyName').value = data.companyName || '';
+                    document.getElementById('email').value = data.email || '';
+                    document.getElementById('phone').value = data.phone || '';
+                    document.getElementById('officeCity').value = data.officeCity || '';
+                    document.getElementById('officeState').value = data.officeState || '';
+                    document.getElementById('serviceArea').value = data.serviceArea || '';
+                    document.getElementById('licenseNumber').value = data.licenseNumber || '';
+                    document.getElementById('bio').value = data.bio || '';
+                    document.getElementById('website').value = data.website || '';
+                    
+                    // Check industry checkboxes
+                    const checkboxes = document.querySelectorAll('input[name="industries"]');
+                    checkboxes.forEach(checkbox => {
+                        if (data.industries && data.industries.includes(checkbox.value)) {
+                            checkbox.checked = true;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error loading broker profile:", error);
+                profileMessage.textContent = "Error loading your profile. Please try refreshing the page.";
+            }
+        }
+
+        // Save profile changes
+        profileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            profileMessage.textContent = '';
+            
+            try {
+                const user = auth.currentUser;
+                
+                // Get selected industries
+                const industries = Array.from(
+                    document.querySelectorAll('input[name="industries"]:checked')
+                ).map(cb => cb.value);
+                
+                // Validate phone number
+                const phone = document.getElementById('phone').value.trim();
+                const phoneRegex = /^\d{10}$/;
+                
+                if (!phoneRegex.test(phone)) {
+                    profileMessage.textContent = 'Phone number must be exactly 10 digits.';
+                    return;
+                }
+                
+                // Create updated data object
+                const updatedData = {
+                    fullName: document.getElementById('fullName').value,
+                    companyName: document.getElementById('companyName').value,
+                    phone: phone,
+                    officeCity: document.getElementById('officeCity').value,
+                    officeState: document.getElementById('officeState').value,
+                    serviceArea: document.getElementById('serviceArea').value,
+                    industries: industries,
+                    licenseNumber: document.getElementById('licenseNumber').value,
+                    bio: document.getElementById('bio').value,
+                    website: document.getElementById('website').value,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                // Update broker document
+                const brokerRef = doc(db, 'brokers', user.uid);
+                await updateDoc(brokerRef, updatedData);
+                
+                profileMessage.textContent = 'Your profile has been updated successfully.';
+                profileMessage.style.color = 'green';
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                profileMessage.textContent = "Error updating your profile: " + error.message;
+                profileMessage.style.color = 'red';
+            }
+        });
+
+        // Load tenant matches
+        async function loadTenantMatches() {
+            try {
+                const user = auth.currentUser;
+                
+                // Query tenant assignments for this broker
+                const q = query(
+                    collection(db, 'tenant_assignments'),
+                    where('brokerId', '==', user.uid)
+                );
+                
+                const matchesSnapshot = await getDocs(q);
+                
+                if (matchesSnapshot.empty) {
+                    tenantMatchesList.innerHTML = '<p>You don\'t have any tenant matches yet.</p>';
+                    return;
+                }
+                
+                // Get tenant details for each match
+                let matchesHTML = '';
+                for (const matchDoc of matchesSnapshot.docs) {
+                    const matchData = matchDoc.data();
+                    const tenantRef = doc(db, 'tenants', matchData.tenantId);
+                    const tenantSnap = await getDoc(tenantRef);
+                    
+                    if (tenantSnap.exists()) {
+                        const tenant = tenantSnap.data();
+                        
+                        matchesHTML += `
+                            <div class="tenant-match-card">
+                                <h4>${tenant.businessName}</h4>
+                                <p><strong>Industry:</strong> ${tenant.industry}</p>
+                                <p><strong>Location:</strong> ${tenant.city}, ${tenant.state} ${tenant.zip}</p>
+                                <p><strong>Lease Status:</strong> ${tenant.leaseStatus}</p>
+                                <p><strong>Size Needed:</strong> ${tenant.size} sq ft</p>
+                                <p><strong>Budget:</strong> ${tenant.budget || 'N/A'}</p>
+                                <p><strong>Contact:</strong> ${tenant.contactName}</p>
+                                <p><strong>Phone:</strong> ${tenant.phone}</p>
+                                <p><strong>Email:</strong> <a href="mailto:${tenant.email}">${tenant.email}</a></p>
+                                <p class="match-date">Assigned: ${new Date(matchData.assignedAt).toLocaleDateString()}</p>
+                            </div>
+                        `;
+                    }
+                }
+                
+                tenantMatchesList.innerHTML = matchesHTML;
+            } catch (error) {
+                console.error("Error loading tenant matches:", error);
+                tenantMatchesList.innerHTML = '<p>Error loading matches. Please try refreshing the page.</p>';
+            }
+        }
+
+        // Logout button
+        logoutBtn.addEventListener('click', async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out:", error);
+            }
+        });
+
+        // Handle broker join button
+        document.getElementById('joinBrokerBtn').onclick = function() {
+            window.location.href = 'broker_request.html';
+        };
+    </script>
+</body>
+</html> 

@@ -594,39 +594,6 @@ footer {
     .feature-grid {
         grid-template-columns: 1fr;
     }
-
-    /* Mobile adjustments for join broker button */
-    #joinBrokerBtn {
-        position: static;
-        display: block;
-        width: calc(100% - 2rem);
-        margin: 1rem auto;
-        text-align: center;
-        justify-content: center;
-    }
-}
-
-/* Industries Checklist Mobile Styles */
-@media (max-width: 768px) {
-    .industries-checklist {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        padding: 1rem;
-        background-color: var(--light-gray);
-        border-radius: 5px;
-    }
-
-    .industries-checklist label {
-        padding: 0.5rem;
-        background: var(--white);
-        border-radius: 4px;
-        margin: 0;
-    }
-
-    .industries-checklist input[type="checkbox"] {
-        margin-right: 0.5rem;
-    }
 }
 
 @media (max-width: 600px) {
@@ -657,4 +624,85 @@ footer {
 
 .admin-section h2 {
     color: var(--green);
+}
+
+/* Dashboard Tabs */
+.dashboard-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--dark-gray);
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    color: var(--green);
+}
+
+.tab-btn.active {
+    color: var(--green);
+    border-bottom: 3px solid var(--green);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Tenant & Broker Cards */
+.tenant-match-card, .broker-card {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 3px solid var(--teal);
+    transition: all 0.3s ease;
+}
+
+.tenant-match-card:hover, .broker-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.tenant-match-card h4, .broker-card h4 {
+    color: var(--green);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.tenant-match-card h5 {
+    color: var(--mauve);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.match-date {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.tenant-info {
+    background-color: var(--gray);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.tenant-info p {
+    margin-bottom: 0.5rem;
 } 
