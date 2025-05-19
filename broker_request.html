@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Broker Application - Retail Solutions</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+    .industries-checklist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        margin-bottom: 1rem;
+    }
+    .industries-checklist label {
+        display: flex;
+        align-items: center;
+        gap: 0.3em;
+        font-weight: normal;
+        margin-bottom: 0;
+    }
+    </style>
 </head>
 <body>
     <header>
@@ -107,16 +122,16 @@
                 </div>
                 <div class="form-group">
                     <label>Experience working with tenants from the following industries.</label>
-                    <div id="industriesChecklist">
-                        <label><input type="checkbox" name="industries" value="Food Service"> Food Service</label><br>
-                        <label><input type="checkbox" name="industries" value="Apparel"> Apparel</label><br>
-                        <label><input type="checkbox" name="industries" value="Health & Wellness"> Health & Wellness</label><br>
-                        <label><input type="checkbox" name="industries" value="Fitness"> Fitness</label><br>
-                        <label><input type="checkbox" name="industries" value="Services"> Services</label><br>
-                        <label><input type="checkbox" name="industries" value="Beauty"> Beauty</label><br>
-                        <label><input type="checkbox" name="industries" value="Electronics"> Electronics</label><br>
-                        <label><input type="checkbox" name="industries" value="Home Goods"> Home Goods</label><br>
-                        <label><input type="checkbox" name="industries" value="Specialty"> Specialty</label><br>
+                    <div id="industriesChecklist" class="industries-checklist">
+                        <label><input type="checkbox" name="industries" value="Food Service"> Food Service</label>
+                        <label><input type="checkbox" name="industries" value="Apparel"> Apparel</label>
+                        <label><input type="checkbox" name="industries" value="Health & Wellness"> Health & Wellness</label>
+                        <label><input type="checkbox" name="industries" value="Fitness"> Fitness</label>
+                        <label><input type="checkbox" name="industries" value="Services"> Services</label>
+                        <label><input type="checkbox" name="industries" value="Beauty"> Beauty</label>
+                        <label><input type="checkbox" name="industries" value="Electronics"> Electronics</label>
+                        <label><input type="checkbox" name="industries" value="Home Goods"> Home Goods</label>
+                        <label><input type="checkbox" name="industries" value="Specialty"> Specialty</label>
                         <label><input type="checkbox" name="industries" value="Other"> Other</label>
                     </div>
                 </div>
@@ -151,6 +166,20 @@
         brokerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             formMessage.textContent = '';
+            // Validation
+            const phone = brokerForm.phone.value.trim();
+            const phoneRegex = /^\d{9}$/;
+            let valid = true;
+            let msg = '';
+            if (!phoneRegex.test(phone)) {
+                valid = false;
+                msg += 'Phone number must be exactly 9 digits (numbers only, no spaces or symbols).\n';
+            }
+            // If you add a ZIP field, add ZIP validation here as well
+            if (!valid) {
+                formMessage.textContent = msg;
+                return;
+            }
             // Collect checked industries
             const industries = Array.from(document.querySelectorAll('input[name="industries"]:checked')).map(cb => cb.value);
             const data = {

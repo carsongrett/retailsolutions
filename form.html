@@ -150,10 +150,12 @@
             // Validation
             const city = document.getElementById('city').value.trim();
             const state = document.getElementById('state').value.trim();
+            const zip = document.getElementById('zip').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const email = document.getElementById('email').value.trim();
             const cityRegex = /^[A-Za-z\s\-']+$/;
-            const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+            const zipRegex = /^\d{5}$/;
+            const phoneRegex = /^\d{9}$/;
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
             let valid = true;
             let msg = '';
@@ -165,9 +167,13 @@
                 valid = false;
                 msg += 'Please select a state.\n';
             }
+            if (!zipRegex.test(zip)) {
+                valid = false;
+                msg += 'ZIP code must be exactly 5 digits.\n';
+            }
             if (!phoneRegex.test(phone)) {
                 valid = false;
-                msg += 'Please enter a valid phone number (e.g., 555-555-5555).\n';
+                msg += 'Phone number must be exactly 9 digits (numbers only, no spaces or symbols).\n';
             }
             if (!emailRegex.test(email)) {
                 valid = false;
