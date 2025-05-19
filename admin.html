@@ -73,19 +73,6 @@
             { name: "Emily Chen", city: "San Francisco", zip: "94102", industries: ["Fashion", "Retail"], email: "emily.chen@brokerco.com" }
         ];
 
-        // Render broker list
-        function renderBrokers() {
-            const adminBrokerList = document.getElementById('adminBrokerList');
-            adminBrokerList.innerHTML = brokers.map(broker => `
-                <div class="broker-card">
-                    <h3>${broker.name}</h3>
-                    <p><strong>City:</strong> ${broker.city} (${broker.zip})</p>
-                    <p><strong>Industries:</strong> ${broker.industries.join(', ')}</p>
-                    <p><strong>Email:</strong> <a href="mailto:${broker.email}">${broker.email}</a></p>
-                </div>
-            `).join('');
-        }
-
         // Auth and dashboard logic
         const loginSection = document.getElementById('loginSection');
         const dashboardSection = document.getElementById('dashboardSection');
@@ -98,7 +85,6 @@
         function showDashboard() {
             loginSection.style.display = 'none';
             dashboardSection.style.display = 'block';
-            renderBrokers();
             loadTenants();
             loadBrokerRequests();
             loadApprovedBrokers();
