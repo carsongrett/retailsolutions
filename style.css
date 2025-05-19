@@ -4,37 +4,55 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* Color palette */
+:root {
+    --mauve: #9E9194;
+    --green: #3B6352;
+    --teal: #76A7A5;
+    --white: #FFFFFF;
+    --black: #222;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    color: #333;
-    background: #f8f9fa;
+    color: var(--black);
+    background: var(--mauve);
     min-height: 100vh;
 }
 header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 1rem;
+    background-color: var(--green);
+    color: var(--white);
+    padding: 1.5rem 1rem 1rem 1rem;
     text-align: center;
+    letter-spacing: 1px;
 }
 nav {
-    background-color: #34495e;
+    background-color: var(--green);
     padding: 1rem;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(59,99,82,0.08);
 }
 nav a {
-    color: white;
+    color: var(--white);
     text-decoration: none;
-    margin: 0 1rem;
+    margin: 0 1.2rem;
     font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+    border-radius: 3px;
+    padding: 0.3rem 0.7rem;
 }
-nav a:hover {
-    text-decoration: underline;
+nav a:hover, nav a:focus {
+    color: var(--green);
+    background: var(--teal);
 }
 .hero {
     text-align: center;
     padding: 4rem 2rem;
-    background-color: #f8f9fa;
+    background-color: var(--teal);
+    color: var(--white);
 }
 .hero h1 {
     font-size: 2.5rem;
@@ -43,36 +61,51 @@ nav a:hover {
 .cta-button {
     display: inline-block;
     padding: 1rem 2rem;
-    background-color: #27ae60;
-    color: white;
+    background-color: var(--green);
+    color: var(--white);
     text-decoration: none;
     border-radius: 5px;
     margin-top: 1rem;
     font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 2px 4px rgba(59,99,82,0.08);
 }
-.cta-button:hover {
-    background-color: #219150;
+.cta-button:hover, .cta-button:focus {
+    background-color: var(--teal);
+    color: var(--black);
 }
 .form-container {
     max-width: 600px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(59,99,82,0.10);
 }
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 label {
     display: block;
     margin-bottom: 0.5rem;
+    color: var(--green);
+    font-weight: bold;
 }
-input, select {
+input, select, textarea {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
+    padding: 0.6rem;
+    border: 1px solid var(--teal);
     border-radius: 4px;
+    font-size: 1rem;
+    background: var(--white);
+    color: var(--black);
+    margin-bottom: 0.2rem;
+}
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--teal);
+    border-color: var(--green);
 }
 .broker-list {
     display: grid;
@@ -81,17 +114,35 @@ input, select {
     padding: 2rem;
 }
 .broker-card {
-    background-color: white;
+    background-color: var(--white);
     padding: 1rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(59,99,82,0.08);
+    border: 1px solid var(--teal);
 }
 footer {
-    background-color: #2c3e50;
-    color: white;
+    background-color: var(--green);
+    color: var(--white);
     text-align: center;
     padding: 1rem;
     margin-top: 2rem;
+}
+footer a {
+    color: var(--teal);
+    text-decoration: underline;
+}
+.industries-checklist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    margin-bottom: 1rem;
+}
+.industries-checklist label {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    font-weight: normal;
+    margin-bottom: 0;
 }
 @media (max-width: 600px) {
     .hero {
@@ -103,4 +154,13 @@ footer {
     .broker-list {
         padding: 1rem;
     }
+}
+/* Card/section backgrounds for admin dashboard */
+.form-container, .admin-section {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(59,99,82,0.10);
+}
+.admin-section h2 {
+    color: var(--green);
 } 
