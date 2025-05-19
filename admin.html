@@ -220,10 +220,15 @@
 
         // Listen for auth state
         onAuthStateChanged(auth, user => {
-            if (user) {
+            if (user && user.email === 'grett.carson@gmail.com') {
                 showDashboard();
             } else {
                 showLogin();
+                if (user) {
+                    // If a non-admin user is logged in, sign them out and show error
+                    signOut(auth);
+                    loginMessage.textContent = 'Access denied. Only administrators can access this page.';
+                }
             }
         });
 
@@ -232,6 +237,12 @@
             e.preventDefault();
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
+            
+            if (email !== 'grett.carson@gmail.com') {
+                loginMessage.textContent = 'Access denied. Only administrators can access this page.';
+                return;
+            }
+            
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (err) {
