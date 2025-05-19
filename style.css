@@ -151,6 +151,13 @@ nav a i {
     transform: translateY(-2px);
 }
 
+/* Join Broker Button specific styles */
+#joinBrokerBtn {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+}
+
 /* Features Section */
 .features {
     padding: 4rem 2rem;
@@ -586,6 +593,39 @@ footer {
     
     .feature-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Mobile adjustments for join broker button */
+    #joinBrokerBtn {
+        position: static;
+        display: block;
+        width: calc(100% - 2rem);
+        margin: 1rem auto;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* Industries Checklist Mobile Styles */
+@media (max-width: 768px) {
+    .industries-checklist {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        padding: 1rem;
+        background-color: var(--light-gray);
+        border-radius: 5px;
+    }
+
+    .industries-checklist label {
+        padding: 0.5rem;
+        background: var(--white);
+        border-radius: 4px;
+        margin: 0;
+    }
+
+    .industries-checklist input[type="checkbox"] {
+        margin-right: 0.5rem;
     }
 }
 

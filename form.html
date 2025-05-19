@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenant Intake Form - Retail Solutions</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>Tenant Intake Form</h1>
+        <div class="logo-container">
+            <i class="fas fa-building"></i>
+            <h1>Retail Solutions</h1>
+        </div>
     </header>
     <nav>
-        <a href="index.html">Home</a>
-        <a href="form.html">Get Matched with a Broker</a>
-        <a href="faq.html">FAQ</a>
-        <a href="admin.html">Admin</a>
+        <div class="nav-container">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="form.html"><i class="fas fa-handshake"></i> Get Matched with a Broker</a>
+            <a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a>
+            <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+        </div>
     </nav>
-    <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;">Brokers – Join Here</button>
+    <button class="cta-button" id="joinBrokerBtn"><i class="fas fa-user-tie"></i> Brokers – Join Here</button>
     <main>
         <section class="form-container">
             <form id="tenantForm">
