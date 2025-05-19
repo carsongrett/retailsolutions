@@ -31,6 +31,9 @@
         <!-- Login Section -->
         <section class="form-container" id="loginSection">
             <h2><i class="fas fa-user"></i> Tenant Login</h2>
+            <div id="registrationMessage" style="display:none;margin-bottom:1.5rem;padding:1rem;background-color:#e3f5e6;border-left:3px solid #3B6352;border-radius:4px;">
+                <p><i class="fas fa-check-circle" style="color:#3B6352;"></i> Your account has been created successfully! You can now log in using your email and password.</p>
+            </div>
             <form id="tenantLoginForm">
                 <div class="form-group">
                     <label for="tenantEmail">Email</label>
@@ -128,6 +131,7 @@
         const dashboardSection = document.getElementById('dashboardSection');
         const tenantLoginForm = document.getElementById('tenantLoginForm');
         const loginMessage = document.getElementById('loginMessage');
+        const registrationMessage = document.getElementById('registrationMessage');
         const tenantInfoDisplay = document.getElementById('tenantInfoDisplay');
         const assignedBrokersList = document.getElementById('assignedBrokersList');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -149,6 +153,14 @@
                 document.getElementById(tabName + 'Tab').classList.add('active');
             });
         });
+
+        // Check if user just registered
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('registered') === 'true') {
+            registrationMessage.style.display = 'block';
+            // Remove the query parameter from the URL without refreshing the page
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
 
         // Function to show dashboard or login based on auth state
         function showDashboard() {

@@ -145,7 +145,18 @@
                     <span class="input-helper">Ten digits only</span>
                     <input type="tel" id="phone" name="phone" required>
                 </div>
-                <p class="form-note">We'll review your information carefully and only share it with a trusted broker if we find a good match. Your details are never sold or misused.</p>
+                <div class="form-group">
+                    <label for="password">Create Password</label>
+                    <span class="input-helper">You'll use this to log in to your account later</span>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <p class="form-note">
+                    <i class="fas fa-shield-alt"></i> We'll review your information carefully and only share it with a trusted broker if we find a good match. Your details are never sold or misused. We will not share your email with third parties or send you spam.
+                </p>
                 <button type="submit" class="cta-button">Submit</button>
             </form>
             <div id="formMessage" style="margin-top:1rem;"></div>
@@ -155,8 +166,9 @@
         <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
     </footer>
     <script type="module">
-        import { db } from './app.js';
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+        import { db, auth } from './app.js';
+        import { collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
         document.getElementById('tenantForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -166,12 +178,17 @@
             const zip = document.getElementById('zip').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
             const cityRegex = /^[A-Za-z\s\-']+$/;
             const zipRegex = /^\d{5}$/;
             const phoneRegex = /^\d{10}$/;
             const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            
             let valid = true;
             let msg = '';
+            
             if (!cityRegex.test(city)) {
                 valid = false;
                 msg += 'Please enter a valid city.\n';
@@ -192,30 +209,56 @@
                 valid = false;
                 msg += 'Please enter a valid email address.\n';
             }
+            if (password.length < 6) {
+                valid = false;
+                msg += 'Password must be at least 6 characters.\n';
+            }
+            if (password !== confirmPassword) {
+                valid = false;
+                msg += 'Passwords do not match.\n';
+            }
+            
             if (!valid) {
                 document.getElementById('formMessage').textContent = msg;
                 return;
             }
-            const data = {
-                businessName: document.getElementById('businessName').value,
-                industry: document.getElementById('industry').value,
-                city: document.getElementById('city').value,
-                state: document.getElementById('state').value,
-                zip: document.getElementById('zip').value,
-                leaseStatus: document.getElementById('leaseStatus').value,
-                size: document.getElementById('size').value,
-                budget: document.getElementById('budget').value,
-                contactName: document.getElementById('contactName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                submittedAt: new Date().toISOString()
-            };
+            
+            const formMessage = document.getElementById('formMessage');
+            formMessage.textContent = 'Submitting...';
+            
             try {
-                await addDoc(collection(db, 'tenants'), data);
-                // Redirect to brokers.html with city and zip as query params
-                window.location.href = `brokers.html?city=${encodeURIComponent(data.city)}&zip=${encodeURIComponent(data.zip)}`;
+                // First create the user account with Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userId = userCredential.user.uid;
+                
+                const data = {
+                    businessName: document.getElementById('businessName').value,
+                    industry: document.getElementById('industry').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    zip: document.getElementById('zip').value,
+                    leaseStatus: document.getElementById('leaseStatus').value,
+                    size: document.getElementById('size').value,
+                    budget: document.getElementById('budget').value,
+                    contactName: document.getElementById('contactName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    submittedAt: new Date().toISOString()
+                };
+                
+                // Store tenant data in Firestore with the user's ID
+                await setDoc(doc(db, 'tenants', userId), data);
+                
+                // Redirect to the tenant dashboard
+                window.location.href = `tenant_login.html?registered=true`;
+                
             } catch (err) {
-                document.getElementById('formMessage').textContent = 'Error submitting form. Please try again.';
+                // Handle errors (e.g., email already in use)
+                if (err.code === 'auth/email-already-in-use') {
+                    formMessage.textContent = 'An account with this email already exists. Please use the tenant login page.';
+                } else {
+                    formMessage.textContent = 'Error submitting form: ' + err.message;
+                }
             }
         });
 
