@@ -20,9 +20,14 @@
             <a href="index.html"><i class="fas fa-home"></i> Home</a>
             <a href="form.html"><i class="fas fa-handshake"></i> Get Matched with a Broker</a>
             <a href="faq.html"><i class="fas fa-question-circle"></i> FAQ</a>
-            <a href="tenant_login.html"><i class="fas fa-user"></i> Tenant Login</a>
-            <a href="broker_login.html"><i class="fas fa-user-tie"></i> Broker Login</a>
-            <a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a>
+            <div class="dropdown">
+                <button class="dropbtn"><i class="fas fa-user"></i> Login <i class="fas fa-caret-down"></i></button>
+                <div class="dropdown-content">
+                    <a href="tenant_login.html"><i class="fas fa-user"></i> Tenant Login</a>
+                    <a href="broker_login.html"><i class="fas fa-user-tie"></i> Broker Login</a>
+                    <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Login</a>
+                </div>
+            </div>
         </div>
     </nav>
     <button class="cta-button" id="joinBrokerBtn" style="position:absolute;top:1.5rem;right:2rem;"><i class="fas fa-user-tie"></i> Brokers – Join Here</button>
@@ -35,7 +40,24 @@
         </section>
     </main>
     <footer>
-        <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-building"></i> Retail Solutions</h4>
+                <p>AI-powered platform connecting businesses with the right commercial real estate brokers since 2024.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="form.html">Get Matched</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Retail Solutions. <a href="privacy.html">Privacy Policy</a></p>
+        </div>
     </footer>
     <script>
     document.getElementById('joinBrokerBtn').onclick = function() {
