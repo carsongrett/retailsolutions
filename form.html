@@ -40,6 +40,7 @@
                 </div>
                 <div class="form-group">
                     <label for="industry">Industry</label>
+                    <span class="input-helper">Select your primary industry</span>
                     <select id="industry" name="industry" required>
                         <option value="">Select...</option>
                         <option value="Food Service">Food Service</option>
@@ -51,8 +52,22 @@
                         <option value="Electronics">Electronics</option>
                         <option value="Home Goods">Home Goods</option>
                         <option value="Specialty">Specialty</option>
-                        <option value="Other">Other</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="secondaryIndustries">Secondary Industries (Optional)</label>
+                    <span class="input-helper">Select any additional industries that describe your business</span>
+                    <div class="industries-checklist">
+                        <label><input type="checkbox" name="secondaryIndustries" value="Food Service"> Food Service</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Apparel"> Apparel</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Health & Wellness"> Health & Wellness</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Fitness"> Fitness</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Services"> Services</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Beauty"> Beauty</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Electronics"> Electronics</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Home Goods"> Home Goods</label>
+                        <label><input type="checkbox" name="secondaryIndustries" value="Specialty"> Specialty</label>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="city">City</label>
@@ -131,11 +146,27 @@
                 </div>
                 <div class="form-group">
                     <label for="size">Size Needed (sq ft)</label>
-                    <input type="number" id="size" name="size" required>
+                    <span class="input-helper">Enter the approximate square footage you need</span>
+                    <input type="number" id="size" name="size" min="100" required>
                 </div>
                 <div class="form-group">
-                    <label for="budget">Budget (optional)</label>
-                    <input type="text" id="budget" name="budget">
+                    <label for="sizeFlexibility">Size Flexibility</label>
+                    <span class="input-helper">How flexible are you with the space size?</span>
+                    <select id="sizeFlexibility" name="sizeFlexibility" required>
+                        <option value="">Select...</option>
+                        <option value="Exact">Must be exact size (±5%)</option>
+                        <option value="Somewhat">Somewhat flexible (±15%)</option>
+                        <option value="Very">Very flexible (±25%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budget">Monthly Budget Range</label>
+                    <span class="input-helper">What's your target monthly budget? (Optional)</span>
+                    <div class="budget-range">
+                        <input type="number" id="budgetMin" name="budgetMin" placeholder="Minimum" min="0">
+                        <span>to</span>
+                        <input type="number" id="budgetMax" name="budgetMax" placeholder="Maximum" min="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="contactName">Contact Name</label>
@@ -158,6 +189,17 @@
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="preferredPropertyTypes">Preferred Property Types</label>
+                    <span class="input-helper">Select all property types you're interested in</span>
+                    <div class="property-types-checklist">
+                        <label><input type="checkbox" name="preferredPropertyTypes" value="Strip Mall"> Strip Mall</label>
+                        <label><input type="checkbox" name="preferredPropertyTypes" value="Shopping Center"> Shopping Center</label>
+                        <label><input type="checkbox" name="preferredPropertyTypes" value="Mall"> Mall</label>
+                        <label><input type="checkbox" name="preferredPropertyTypes" value="Street Retail"> Street Retail</label>
+                        <label><input type="checkbox" name="preferredPropertyTypes" value="Mixed Use"> Mixed Use</label>
+                    </div>
                 </div>
                 <p class="form-note">
                     <i class="fas fa-shield-alt"></i> We'll review your information carefully and only share it with a trusted broker if we find a good match. Your details are never sold or misused. We will not share your email with third parties or send you spam.
@@ -194,7 +236,8 @@
 
         document.getElementById('tenantForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            // Validation
+            
+            // Enhanced validation
             const city = document.getElementById('city').value.trim();
             const state = document.getElementById('state').value.trim();
             const zip = document.getElementById('zip').value.trim();
@@ -202,6 +245,9 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const size = document.getElementById('size').value;
+            const budgetMin = document.getElementById('budgetMin').value;
+            const budgetMax = document.getElementById('budgetMax').value;
             
             const cityRegex = /^[A-Za-z\s\-']+$/;
             const zipRegex = /^\d{5}$/;
@@ -225,7 +271,7 @@
             }
             if (!phoneRegex.test(phone)) {
                 valid = false;
-                msg += 'Phone number must be exactly 10 digits (numbers only, no spaces or symbols).\n';
+                msg += 'Phone number must be exactly 10 digits (numbers only).\n';
             }
             if (!emailRegex.test(email)) {
                 valid = false;
@@ -239,6 +285,21 @@
                 valid = false;
                 msg += 'Passwords do not match.\n';
             }
+            if (size < 100) {
+                valid = false;
+                msg += 'Size must be at least 100 square feet.\n';
+            }
+            if (budgetMin && budgetMax && parseInt(budgetMin) > parseInt(budgetMax)) {
+                valid = false;
+                msg += 'Minimum budget cannot be greater than maximum budget.\n';
+            }
+            
+            // Validate property types selection
+            const propertyTypes = Array.from(document.querySelectorAll('input[name="preferredPropertyTypes"]:checked')).map(cb => cb.value);
+            if (propertyTypes.length === 0) {
+                valid = false;
+                msg += 'Please select at least one preferred property type.\n';
+            }
             
             if (!valid) {
                 document.getElementById('formMessage').textContent = msg;
@@ -249,38 +310,42 @@
             formMessage.textContent = 'Submitting...';
             
             try {
-                // First create the user account with Firebase Auth
+                // Create user account
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const userId = userCredential.user.uid;
                 
-                const data = {
+                // Prepare tenant data
+                const tenantData = {
                     businessName: document.getElementById('businessName').value,
                     industry: document.getElementById('industry').value,
-                    city: document.getElementById('city').value,
-                    state: document.getElementById('state').value,
-                    zip: document.getElementById('zip').value,
+                    secondaryIndustries: Array.from(document.querySelectorAll('input[name="secondaryIndustries"]:checked')).map(cb => cb.value),
+                    city: city,
+                    state: state,
+                    zip: zip,
                     leaseStatus: document.getElementById('leaseStatus').value,
-                    size: document.getElementById('size').value,
-                    budget: document.getElementById('budget').value,
+                    size: parseInt(size),
+                    sizeFlexibility: document.getElementById('sizeFlexibility').value,
+                    preferredPropertyTypes: propertyTypes,
+                    budget: {
+                        min: budgetMin ? parseInt(budgetMin) : null,
+                        max: budgetMax ? parseInt(budgetMax) : null
+                    },
                     contactName: document.getElementById('contactName').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    submittedAt: new Date().toISOString()
+                    email: email,
+                    phone: phone,
+                    status: 'unassigned',
+                    submittedAt: new Date().toISOString(),
+                    userId: userCredential.user.uid
                 };
                 
-                // Store tenant data in Firestore with the user's ID
-                await setDoc(doc(db, 'tenants', userId), data);
+                // Save tenant data
+                await setDoc(doc(db, 'tenants', userCredential.user.uid), tenantData);
                 
-                // Redirect to the tenant dashboard
-                window.location.href = `tenant_login.html?registered=true`;
+                // Clear form and show success message
+                document.getElementById('tenantForm').reset();
+                formMessage.textContent = 'Thank you! We'll review your information and match you with the best broker for your needs.';
                 
-            } catch (err) {
-                // Handle errors (e.g., email already in use)
-                if (err.code === 'auth/email-already-in-use') {
-                    formMessage.textContent = 'An account with this email already exists. Please use the tenant login page.';
-                } else {
-                    formMessage.textContent = 'Error submitting form: ' + err.message;
-                }
+            } catch (error) {
+                formMessage.textContent = 'Error: ' + error.message;
             }
         });
 
@@ -288,5 +353,35 @@
             window.location.href = 'broker_request.html';
         };
     </script>
+    <style>
+    .industries-checklist,
+    .property-types-checklist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .input-helper {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .budget-range {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .budget-range input {
+        width: 150px;
+    }
+
+    .budget-range span {
+        color: var(--dark-gray);
+    }
+    </style>
 </body>
 </html> 

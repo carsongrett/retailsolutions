@@ -10,8 +10,8 @@
     <style>
     .industries-checklist {
         display: flex;
-        flex-wrap: wrap;
-        gap: 1rem 2rem;
+        flex-direction: column;
+        gap: 1rem;
         margin-bottom: 1rem;
     }
     .industries-checklist label {
@@ -20,6 +20,19 @@
         gap: 0.3em;
         font-weight: normal;
         margin-bottom: 0;
+    }
+    .property-types-checklist,
+    .deal-sizes-checklist {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        margin-bottom: 1rem;
+    }
+    .input-helper {
+        display: block;
+        font-size: 0.9rem;
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
     }
     </style>
 </head>
@@ -130,11 +143,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="serviceArea">Service Area (ZIPs or Metro Areas)</label>
+                    <label for="serviceArea">Service Area</label>
+                    <span class="input-helper">Enter ZIP codes separated by commas, or metro areas (e.g., "10001, 10002, NYC Metro")</span>
                     <input type="text" id="serviceArea" name="serviceArea" required placeholder="e.g. 10001, 10002 or NYC Metro">
                 </div>
                 <div class="form-group">
-                    <label>Experience working with tenants from the following industries.</label>
+                    <label>Industry Experience</label>
+                    <span class="input-helper">Select all industries you have experience with</span>
                     <div id="industriesChecklist" class="industries-checklist">
                         <label><input type="checkbox" name="industries" value="Food Service"> Food Service</label>
                         <label><input type="checkbox" name="industries" value="Apparel"> Apparel</label>
@@ -145,7 +160,28 @@
                         <label><input type="checkbox" name="industries" value="Electronics"> Electronics</label>
                         <label><input type="checkbox" name="industries" value="Home Goods"> Home Goods</label>
                         <label><input type="checkbox" name="industries" value="Specialty"> Specialty</label>
-                        <label><input type="checkbox" name="industries" value="Other"> Other</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="propertyTypes">Property Types Experience</label>
+                    <span class="input-helper">Select all property types you work with</span>
+                    <div class="property-types-checklist">
+                        <label><input type="checkbox" name="propertyTypes" value="Strip Mall"> Strip Mall</label>
+                        <label><input type="checkbox" name="propertyTypes" value="Shopping Center"> Shopping Center</label>
+                        <label><input type="checkbox" name="propertyTypes" value="Mall"> Mall</label>
+                        <label><input type="checkbox" name="propertyTypes" value="Street Retail"> Street Retail</label>
+                        <label><input type="checkbox" name="propertyTypes" value="Mixed Use"> Mixed Use</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dealSizes">Typical Deal Sizes</label>
+                    <span class="input-helper">Select all that apply</span>
+                    <div class="deal-sizes-checklist">
+                        <label><input type="checkbox" name="dealSizes" value="Under 1000 sqft"> Under 1,000 sq ft</label>
+                        <label><input type="checkbox" name="dealSizes" value="1000-2500 sqft"> 1,000-2,500 sq ft</label>
+                        <label><input type="checkbox" name="dealSizes" value="2500-5000 sqft"> 2,500-5,000 sq ft</label>
+                        <label><input type="checkbox" name="dealSizes" value="5000-10000 sqft"> 5,000-10,000 sq ft</label>
+                        <label><input type="checkbox" name="dealSizes" value="Over 10000 sqft"> Over 10,000 sq ft</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -196,38 +232,79 @@
         brokerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             formMessage.textContent = '';
-            // Validation
+            
+            // Enhanced validation
             const phone = brokerForm.phone.value.trim();
-            const phoneRegex = /^\d{9}$/;
+            const email = brokerForm.email.value.trim();
+            const password = brokerForm.password.value;
+            const serviceArea = brokerForm.serviceArea.value.trim();
+            
+            const phoneRegex = /^\d{10}$/;
+            const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            const serviceAreaRegex = /^[\d,\s\w-]+$/;
+            
             let valid = true;
             let msg = '';
+            
             if (!phoneRegex.test(phone)) {
                 valid = false;
-                msg += 'Phone number must be exactly 9 digits (numbers only, no spaces or symbols).\n';
+                msg += 'Phone number must be exactly 10 digits (numbers only).\n';
             }
-            // If you add a ZIP field, add ZIP validation here as well
+            
+            if (!emailRegex.test(email)) {
+                valid = false;
+                msg += 'Please enter a valid email address.\n';
+            }
+            
+            if (password.length < 6) {
+                valid = false;
+                msg += 'Password must be at least 6 characters.\n';
+            }
+            
+            if (!serviceAreaRegex.test(serviceArea)) {
+                valid = false;
+                msg += 'Service area can only contain numbers, letters, commas, and spaces.\n';
+            }
+            
+            // Check that at least one industry is selected
+            const selectedIndustries = Array.from(document.querySelectorAll('input[name="industries"]:checked'));
+            if (selectedIndustries.length === 0) {
+                valid = false;
+                msg += 'Please select at least one industry.\n';
+            }
+            
             if (!valid) {
                 formMessage.textContent = msg;
                 return;
             }
-            // Collect checked industries
-            const industries = Array.from(document.querySelectorAll('input[name="industries"]:checked')).map(cb => cb.value);
+            
+            // Collect form data
+            const industries = selectedIndustries.map(cb => ({
+                name: cb.value,
+                expertise: 1 // Assuming a default expertise level of 1 star
+            }));
+            
+            const propertyTypes = Array.from(document.querySelectorAll('input[name="propertyTypes"]:checked')).map(cb => cb.value);
+            const dealSizes = Array.from(document.querySelectorAll('input[name="dealSizes"]:checked')).map(cb => cb.value);
+            
             const data = {
                 fullName: brokerForm.fullName.value,
                 companyName: brokerForm.companyName.value,
-                email: brokerForm.email.value,
-                phone: brokerForm.phone.value,
+                email: email,
+                phone: phone,
                 officeCity: brokerForm.officeCity.value,
                 officeState: brokerForm.officeState.value,
-                serviceArea: brokerForm.serviceArea.value,
+                serviceArea: serviceArea,
                 industries: industries,
+                propertyTypes: propertyTypes,
+                dealSizes: dealSizes,
                 licenseNumber: brokerForm.licenseNumber.value,
                 bio: brokerForm.bio.value,
-                website: brokerForm.website.value, // No validation
+                website: brokerForm.website.value,
                 submittedAt: new Date().toISOString(),
                 status: 'pending'
             };
-            const password = brokerForm.password.value;
+            
             try {
                 // Create Firebase Auth user
                 await createUserWithEmailAndPassword(auth, data.email, password);

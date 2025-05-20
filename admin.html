@@ -38,14 +38,73 @@
         }
         
         .tenant-match-card {
-            background-color: var(--light-gray);
+            background-color: white;
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--light-gray);
         }
-        
+
+        .tenant-match-card h4 {
+            margin: 0 0 1rem 0;
+            color: var(--dark-gray);
+            font-size: 1.2rem;
+        }
+
+        .tenant-match-card p {
+            margin: 0.5rem 0;
+            color: var(--dark-gray);
+        }
+
         .broker-match-dropdown {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .broker-match-dropdown label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .broker-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .assign-btn {
+            background-color: var(--green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .assign-btn:hover {
+            background-color: var(--dark-green);
+        }
+
+        .tenant-assignments {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        option[data-score] {
+            padding: 0.5rem;
+        }
+
+        option[data-score]::after {
+            content: attr(data-score);
+            float: right;
+            color: var(--green);
         }
     </style>
 </head>
@@ -113,7 +172,9 @@
             <div class="tab-content" id="assignmentsTab">
                 <h3>Tenant-Broker Assignments</h3>
                 <div id="assignmentsList">
-                    <p>Select tenants from the list and assign them to brokers.</p>
+                    <div class="tenant-assignments">
+                        <!-- Each tenant card will be added here dynamically -->
+                    </div>
                 </div>
             </div>
             
@@ -176,6 +237,7 @@
             where,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+        import { MatchingEngine } from './matching_engine.js';
 
         // Auth and dashboard logic
         const loginSection = document.getElementById('loginSection');
@@ -295,156 +357,88 @@
             }
         }
         
-        // Load and display tenant-broker assignments
+        // Initialize matching engine
+        const matchingEngine = new MatchingEngine(db);
+
+        // Function to load and display tenant assignments with recommendations
         async function loadAssignments() {
-            assignmentsList.textContent = 'Loading assignments...';
+            const assignmentsList = document.querySelector('.tenant-assignments');
+            assignmentsList.innerHTML = 'Loading...';
+
             try {
-                const q = query(collection(db, 'tenant_assignments'), orderBy('assignedAt', 'desc'));
-                const snapshot = await getDocs(q);
+                // Get unassigned tenants
+                const tenantsRef = collection(db, 'tenants');
+                const q = query(tenantsRef, where("status", "==", "unassigned"));
+                const tenantSnapshot = await getDocs(q);
+
+                let html = '';
                 
-                if (snapshot.empty) {
-                    assignmentsList.innerHTML = '<p>No tenant-broker assignments yet.</p>';
-                    return;
-                }
-                
-                let assignmentsHTML = '';
-                
-                for (const assignmentDoc of snapshot.docs) {
-                    const assignmentData = assignmentDoc.data();
+                // Process each tenant
+                for (const tenantDoc of tenantSnapshot.docs) {
+                    const tenant = tenantDoc.data();
                     
-                    // Get tenant information
-                    const tenantRef = doc(db, 'tenants', assignmentData.tenantId);
-                    const tenantSnap = await getDoc(tenantRef);
+                    // Get recommended brokers for this tenant
+                    const recommendations = await matchingEngine.getRecommendedBrokers(tenant);
                     
-                    // Get broker information
-                    const brokerRef = doc(db, 'brokers', assignmentData.brokerId);
-                    const brokerSnap = await getDoc(brokerRef);
-                    
-                    if (tenantSnap.exists() && brokerSnap.exists()) {
-                        const tenant = tenantSnap.data();
-                        const broker = brokerSnap.data();
-                        
-                        assignmentsHTML += `
-                            <div class="tenant-match-card">
-                                <h4>Assignment ID: ${assignmentDoc.id}</h4>
-                                <div style="display:flex;flex-wrap:wrap;gap:2rem;margin-top:1rem;">
-                                    <div style="flex:1;min-width:250px;">
-                                        <h5>Tenant:</h5>
-                                        <p><strong>${tenant.businessName}</strong> (${tenant.industry})</p>
-                                        <p>${tenant.city}, ${tenant.state} ${tenant.zip}</p>
-                                        <p>${tenant.contactName}, ${tenant.email}</p>
-                                    </div>
-                                    <div style="flex:1;min-width:250px;">
-                                        <h5>Broker:</h5>
-                                        <p><strong>${broker.fullName}</strong> (${broker.companyName})</p>
-                                        <p>${broker.officeCity}, ${broker.officeState}</p>
-                                        <p>${broker.email}</p>
-                                    </div>
-                                </div>
-                                <p class="match-date">Assigned: ${new Date(assignmentData.assignedAt).toLocaleDateString()}</p>
-                                <button class="cta-button" onclick="window.removeAssignment('${assignmentDoc.id}')" style="background:#c0392b;">Remove Assignment</button>
+                    html += `
+                        <div class="tenant-match-card">
+                            <h4>${tenant.businessName}</h4>
+                            <p><strong>Industry:</strong> ${tenant.industry}</p>
+                            <p><strong>Location:</strong> ${tenant.city}, ${tenant.state}</p>
+                            <p><strong>Space Needed:</strong> ${tenant.size} sq ft</p>
+                            <div class="broker-match-dropdown">
+                                <label><strong>Assign Broker:</strong></label>
+                                <select class="broker-select" data-tenant-id="${tenantDoc.id}">
+                                    <option value="">Select a broker...</option>
+                                    ${recommendations.map(broker => `
+                                        <option value="${broker.id}" data-score="${broker.matchScore}">
+                                            ${broker.fullName} (Match Score: ${Math.round(broker.matchScore)}%)
+                                        </option>
+                                    `).join('')}
+                                </select>
+                                <button class="assign-btn" data-tenant-id="${tenantDoc.id}">
+                                    Assign Broker
+                                </button>
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
                 }
-                
-                assignmentsList.innerHTML = assignmentsHTML;
-            } catch (err) {
-                assignmentsList.textContent = 'Error loading assignments: ' + err.message;
+
+                assignmentsList.innerHTML = html || '<p>No unassigned tenants found.</p>';
+
+                // Add event listeners to assign buttons
+                document.querySelectorAll('.assign-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const tenantId = e.target.dataset.tenantId;
+                        const select = document.querySelector(`.broker-select[data-tenant-id="${tenantId}"]`);
+                        const brokerId = select.value;
+
+                        if (!brokerId) {
+                            alert('Please select a broker first');
+                            return;
+                        }
+
+                        try {
+                            // Update tenant document with assigned broker
+                            await setDoc(doc(db, 'tenants', tenantId), {
+                                brokerId: brokerId,
+                                status: 'assigned',
+                                assignedAt: serverTimestamp()
+                            }, { merge: true });
+
+                            // Refresh the assignments list
+                            loadAssignments();
+                        } catch (error) {
+                            console.error('Error assigning broker:', error);
+                            alert('Failed to assign broker. Please try again.');
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+                assignmentsList.innerHTML = 'Error loading assignments. Please try again.';
             }
         }
-
-        // Assign broker to tenant
-        window.assignBroker = async function(tenantId) {
-            try {
-                // Get tenant details
-                const tenant = tenantsData.find(t => t.id === tenantId);
-                if (!tenant) throw new Error('Tenant not found');
-                
-                // If we don't have brokers data yet, load it
-                if (approvedBrokersData.length === 0) {
-                    const q = query(collection(db, 'brokers'));
-                    const snapshot = await getDocs(q);
-                    approvedBrokersData = snapshot.docs.map(doc => {
-                        return {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                    });
-                }
-                
-                // No brokers to assign
-                if (approvedBrokersData.length === 0) {
-                    alert('No approved brokers available to assign.');
-                    return;
-                }
-                
-                // Create broker select HTML
-                const brokerOptions = approvedBrokersData.map(broker => {
-                    return `<option value="${broker.id}">${broker.fullName} (${broker.companyName}) - ${broker.officeCity}, ${broker.officeState}</option>`;
-                }).join('');
-                
-                // Show assignment modal/prompt
-                const brokerSelect = prompt(
-                    `Assign a broker to ${tenant.businessName} (${tenant.city}, ${tenant.state}):\n\n` +
-                    `Available brokers:\n` +
-                    approvedBrokersData.map(b => `- ${b.fullName} (${b.companyName})\n`).join(''),
-                    ''
-                );
-                
-                if (brokerSelect === null) return; // User cancelled
-                
-                // Find selected broker
-                const brokerId = approvedBrokersData.find(b => 
-                    b.fullName.toLowerCase().includes(brokerSelect.toLowerCase()) || 
-                    b.email.toLowerCase() === brokerSelect.toLowerCase()
-                )?.id;
-                
-                if (!brokerId) {
-                    alert('Broker not found. Please enter a valid broker name or email.');
-                    return;
-                }
-                
-                // Check if this assignment already exists
-                const existingQ = query(
-                    collection(db, 'tenant_assignments'),
-                    where('tenantId', '==', tenantId),
-                    where('brokerId', '==', brokerId)
-                );
-                const existingSnapshot = await getDocs(existingQ);
-                
-                if (!existingSnapshot.empty) {
-                    alert('This tenant is already assigned to this broker.');
-                    return;
-                }
-                
-                // Create assignment
-                await addDoc(collection(db, 'tenant_assignments'), {
-                    tenantId: tenantId,
-                    brokerId: brokerId,
-                    assignedAt: new Date().toISOString(),
-                    assignedBy: auth.currentUser.email
-                });
-                
-                alert('Tenant successfully assigned to broker!');
-                loadAssignments();
-            } catch (err) {
-                alert('Error assigning broker: ' + err.message);
-            }
-        };
-        
-        // Remove tenant-broker assignment
-        window.removeAssignment = async function(assignmentId) {
-            if (!confirm('Are you sure you want to remove this assignment?')) return;
-            
-            try {
-                await deleteDoc(doc(db, 'tenant_assignments', assignmentId));
-                alert('Assignment removed successfully.');
-                loadAssignments();
-            } catch (err) {
-                alert('Error removing assignment: ' + err.message);
-            }
-        };
 
         // Load broker requests from Firestore
         async function loadBrokerRequests() {
