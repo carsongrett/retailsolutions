@@ -50,11 +50,15 @@
             margin: 0 0 1rem 0;
             color: var(--dark-gray);
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .tenant-match-card p {
             margin: 0.5rem 0;
             color: var(--dark-gray);
+            line-height: 1.5;
         }
 
         .broker-match-dropdown {
@@ -66,6 +70,7 @@
         .broker-match-dropdown label {
             display: block;
             margin-bottom: 0.5rem;
+            color: var(--dark-gray);
         }
 
         .broker-select {
@@ -75,6 +80,11 @@
             border-radius: 4px;
             margin-bottom: 1rem;
             font-size: 1rem;
+            background-color: white;
+        }
+
+        .broker-select option {
+            padding: 0.5rem;
         }
 
         .assign-btn {
@@ -85,11 +95,17 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            transition: all 0.2s ease;
+            width: 100%;
         }
 
         .assign-btn:hover {
             background-color: var(--dark-green);
+            transform: translateY(-1px);
+        }
+
+        .assign-btn:active {
+            transform: translateY(0);
         }
 
         .tenant-assignments {
@@ -385,22 +401,22 @@
                     
                     html += `
                         <div class="tenant-match-card">
-                            <h4>${tenant.businessName}</h4>
+                            <h4><i class="fas fa-building"></i> ${tenant.businessName}</h4>
                             <p><strong>Industry:</strong> ${tenant.industry}</p>
                             <p><strong>Location:</strong> ${tenant.city}, ${tenant.state}</p>
-                            <p><strong>Space Needed:</strong> ${tenant.size} sq ft</p>
+                            <p><strong>Space Needed:</strong> ${tenant.size.toLocaleString()} sq ft</p>
                             <div class="broker-match-dropdown">
-                                <label><strong>Assign Broker:</strong></label>
+                                <label><strong>Recommended Brokers:</strong></label>
                                 <select class="broker-select" data-tenant-id="${tenantDoc.id}">
                                     <option value="">Select a broker...</option>
                                     ${recommendations.map(broker => `
                                         <option value="${broker.id}" data-score="${broker.matchScore}">
-                                            ${broker.fullName} (Match Score: ${Math.round(broker.matchScore)}%)
+                                            ${broker.fullName} (Match: ${Math.round(broker.matchScore)}%)
                                         </option>
                                     `).join('')}
                                 </select>
                                 <button class="assign-btn" data-tenant-id="${tenantDoc.id}">
-                                    Assign Broker
+                                    <i class="fas fa-user-check"></i> Assign Selected Broker
                                 </button>
                             </div>
                         </div>
@@ -467,8 +483,10 @@
                         <strong>Bio:</strong> ${b.bio || 'N/A'}<br>
                         <strong>Website:</strong> ${b.website || 'N/A'}<br>
                         <small>Submitted: ${b.submittedAt ? new Date(b.submittedAt).toLocaleString() : 'Unknown'}</small><br>
-                        <button class="cta-button" onclick="window.approveBroker('${id}')">Approve</button>
-                        <button class="cta-button" onclick="window.rejectBroker('${id}')" style="background:#c0392b;">Reject</button>
+                        <div style="margin-top: 1rem;">
+                            <button class="cta-button" onclick="window.approveBroker('${id}').catch(err => alert('Error: ' + err.message))">Approve</button>
+                            <button class="cta-button" onclick="window.rejectBroker('${id}').catch(err => alert('Error: ' + err.message))" style="background-color: #c0392b; margin-left: 0.5rem;">Reject</button>
+                        </div>
                     </div>`;
                 }).join('');
             } catch (err) {
@@ -478,6 +496,8 @@
 
         // Approve broker
         window.approveBroker = async function(id) {
+            if (!confirm('Are you sure you want to approve this broker?')) return;
+            
             try {
                 const docRef = doc(db, 'brokers_pending', id);
                 const docSnap = await getDoc(docRef);
@@ -485,7 +505,11 @@
                 
                 if (!brokerData) throw new Error('Broker not found');
                 
-                await setDoc(doc(db, 'brokers', id), brokerData);
+                await setDoc(doc(db, 'brokers', id), {
+                    ...brokerData,
+                    status: 'approved',
+                    approvedAt: serverTimestamp()
+                });
                 await deleteDoc(docRef);
                 
                 alert('Broker approved successfully!');
@@ -495,12 +519,15 @@
                 // Refresh approved brokers data
                 approvedBrokersData = [];
             } catch (err) {
-                alert('Error approving broker: ' + err.message);
+                console.error('Error approving broker:', err);
+                throw err;
             }
         }
 
         // Reject broker
         window.rejectBroker = async function(id) {
+            if (!confirm('Are you sure you want to reject this broker?')) return;
+            
             try {
                 const docRef = doc(db, 'brokers_pending', id);
                 const docSnap = await getDoc(docRef);
@@ -508,14 +535,19 @@
                 
                 if (!brokerData) throw new Error('Broker not found');
                 
-                await setDoc(doc(db, 'rejected_brokers', id), brokerData);
+                await setDoc(doc(db, 'rejected_brokers', id), {
+                    ...brokerData,
+                    status: 'rejected',
+                    rejectedAt: serverTimestamp()
+                });
                 await deleteDoc(docRef);
                 
                 alert('Broker request rejected.');
                 loadBrokerRequests();
                 loadDeniedBrokers();
             } catch (err) {
-                alert('Error rejecting broker: ' + err.message);
+                console.error('Error rejecting broker:', err);
+                throw err;
             }
         }
 
