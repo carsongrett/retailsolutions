@@ -349,7 +349,10 @@
                         <strong>Budget:</strong> ${t.budget || 'N/A'}<br>
                         <strong>Contact:</strong> ${t.contactName}, ${t.email}, ${t.phone}<br>
                         <small>Submitted: ${new Date(t.submittedAt).toLocaleString()}</small><br>
-                        <button class="cta-button" onclick="window.assignBroker('${t.id}')">Assign Broker</button>
+                        ${t.status === 'unassigned' ? 
+                            `<button class="cta-button" onclick="document.querySelector('[data-tab=assignments]').click()">View Broker Matches</button>` :
+                            `<p><strong>Status:</strong> ${t.status}</p>`
+                        }
                     </div>`;
                 }).join('');
             } catch (err) {
