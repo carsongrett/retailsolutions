@@ -271,16 +271,11 @@
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
         import { collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-        console.log('JavaScript module loaded');
         const brokerForm = document.getElementById('brokerForm');
         const formMessage = document.getElementById('formMessage');
-        
-        console.log('Form element found:', brokerForm);
-        console.log('Message element found:', formMessage);
 
         brokerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Form submission started');
             formMessage.textContent = '';
             
             // Enhanced validation
@@ -324,12 +319,9 @@
             }
             
             if (!valid) {
-                console.log('Validation failed:', msg);
                 formMessage.textContent = msg;
                 return;
             }
-            
-            console.log('Validation passed, proceeding with Firebase operations');
             
             // Collect form data
             const industries = selectedIndustries.map(cb => ({
@@ -359,25 +351,20 @@
             };
             
             try {
-                console.log('Creating Firebase Auth user for:', data.email);
                 // Create Firebase Auth user
                 const userCredential = await createUserWithEmailAndPassword(auth, data.email, password);
-                console.log('User created successfully:', userCredential.user.uid);
                 
-                console.log('Saving to Firestore...');
                 // Save broker application to Firestore using their email as the document ID
                 await setDoc(doc(db, 'brokers_pending', data.email), {
                     ...data,
                     userId: userCredential.user.uid  // Store their Firebase Auth user ID
                 });
-                console.log('Data saved to Firestore successfully');
                 
                 brokerForm.reset();
                 formMessage.textContent = 'Thanks! Your request is under review.';
                 formMessage.style.color = 'green';
                 brokerForm.style.display = 'none';
             } catch (err) {
-                console.error('Error during submission:', err);
                 formMessage.textContent = 'Error: ' + err.message;
                 formMessage.style.color = 'red';
             }

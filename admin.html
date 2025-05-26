@@ -522,24 +522,10 @@
                 const brokerData = docSnap.data();
                 
                 if (!brokerData) throw new Error('Broker not found');
+                if (!brokerData.userId) throw new Error('Broker user ID not found');
 
-                // Get or create the broker's Firebase Auth account
-                let userCredential;
-                try {
-                    // Try to create new user
-                    userCredential = await createUserWithEmailAndPassword(auth, brokerData.email, generateTempPassword());
-                } catch (error) {
-                    if (error.code === 'auth/email-already-in-use') {
-                        // If user exists, get their user record
-                        const userRecord = await auth.getUserByEmail(brokerData.email);
-                        userCredential = { user: userRecord };
-                    } else {
-                        throw error;
-                    }
-                }
-                
-                // Save broker data using their Firebase Auth user ID
-                await setDoc(doc(db, 'brokers', userCredential.user.uid), {
+                // Save broker data using their existing Firebase Auth user ID
+                await setDoc(doc(db, 'brokers', brokerData.userId), {
                     ...brokerData,
                     status: 'approved',
                     approvedAt: serverTimestamp()
