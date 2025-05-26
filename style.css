@@ -15,6 +15,8 @@
     --gray: #f5f5f5;
     --light-gray: #e9e9e9;
     --dark-gray: #555;
+    --accent-orange: #FF6B35;
+    --accent-blue: #4A90E2;
 }
 
 body {
@@ -203,6 +205,37 @@ nav a i {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Special styling for the broker join button */
+#joinBrokerBtn {
+    background-color: var(--accent-orange);
+    border: 2px solid var(--white);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#joinBrokerBtn:hover {
+    background-color: var(--white);
+    color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    transform: translateY(-2px);
+}
+
+/* Special styling for the Start Saving button */
+.hero .cta-button {
+    background-color: var(--accent-blue);
+    font-size: 1.2rem;
+    padding: 1.2rem 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hero .cta-button:hover {
+    background-color: var(--white);
+    color: var(--accent-blue);
+    border: 2px solid var(--accent-blue);
 }
 
 .cta-button:hover, .cta-button:focus {
