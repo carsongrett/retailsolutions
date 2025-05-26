@@ -256,13 +256,17 @@
     </script>
     <script type="module">
         import { db, auth } from './app.js';
-        import { collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+        import { collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
 
-        document.getElementById('tenantForm').addEventListener('submit', async function(e) {
+        const tenantForm = document.getElementById('tenantForm');
+        const formMessage = document.getElementById('formMessage');
+
+        tenantForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            formMessage.textContent = '';
             
-            // Enhanced validation
+            // Get form values
             const city = document.getElementById('city').value.trim();
             const state = document.getElementById('state').value.trim();
             const zip = document.getElementById('zip').value.trim();
@@ -274,6 +278,7 @@
             const budgetMin = document.getElementById('budgetMin').value;
             const budgetMax = document.getElementById('budgetMax').value;
             
+            // Validation
             const cityRegex = /^[A-Za-z\s\-']+$/;
             const zipRegex = /^\d{5}$/;
             const phoneRegex = /^\d{10}$/;
@@ -327,11 +332,10 @@
             }
             
             if (!valid) {
-                document.getElementById('formMessage').textContent = msg;
+                formMessage.textContent = msg;
                 return;
             }
             
-            const formMessage = document.getElementById('formMessage');
             formMessage.textContent = 'Submitting...';
             
             try {
@@ -366,11 +370,13 @@
                 await setDoc(doc(db, 'tenants', userCredential.user.uid), tenantData);
                 
                 // Clear form and show success message
-                document.getElementById('tenantForm').reset();
-                formMessage.textContent = 'Thank you! We'll review your information and match you with the best broker for your needs.';
+                tenantForm.reset();
+                formMessage.textContent = 'Thank you! We\'ll review your information and match you with the best broker for your needs.';
+                formMessage.style.color = 'green';
                 
             } catch (error) {
                 formMessage.textContent = 'Error: ' + error.message;
+                formMessage.style.color = 'red';
             }
         });
     </script>
