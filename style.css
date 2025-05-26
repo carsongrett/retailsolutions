@@ -17,6 +17,8 @@
     --dark-gray: #555;
     --accent-orange: #FF6B35;
     --accent-blue: #4A90E2;
+    --beta-purple: #6B46C1;
+    --beta-light: #EDE9FE;
 }
 
 body {
@@ -697,6 +699,35 @@ footer {
     .feature-grid {
         grid-template-columns: 1fr;
     }
+    
+    /* Beta responsive styles */
+    .beta-content {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .beta-text {
+        font-size: 0.8rem;
+    }
+    
+    .progress-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .progress-bar {
+        width: 200px;
+    }
+    
+    .beta-hero-message p {
+        flex-direction: column;
+        gap: 0.25rem;
+        text-align: center;
+    }
+    
+    .beta-form-message {
+        padding: 1rem;
+    }
 }
 
 @media (max-width: 600px) {
@@ -808,4 +839,122 @@ footer {
 
 .tenant-info p {
     margin-bottom: 0.5rem;
+}
+
+/* Beta Banner Styles */
+.beta-banner {
+    background: linear-gradient(135deg, var(--beta-purple), var(--accent-blue));
+    color: var(--white);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.beta-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.beta-badge {
+    background: var(--white);
+    color: var(--beta-purple);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.beta-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-bar {
+    width: 120px;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--white);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Beta Hero Message */
+.beta-hero-message {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    backdrop-filter: blur(10px);
+}
+
+.beta-hero-message p {
+    margin: 0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.beta-hero-message i {
+    color: var(--white);
+    opacity: 0.8;
+}
+
+/* Beta Form Message */
+.beta-form-message {
+    background: var(--beta-light);
+    border: 1px solid var(--beta-purple);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.beta-form-message h3 {
+    color: var(--beta-purple);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.beta-form-message p {
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.beta-form-message .highlight {
+    color: var(--beta-purple);
+    font-weight: 600;
 } 
