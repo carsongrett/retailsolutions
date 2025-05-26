@@ -209,7 +209,7 @@ nav a i {
 
 /* Special styling for the broker join button */
 #joinBrokerBtn {
-    background-color: var(--accent-orange);
+    background-color: var(--accent-blue);
     border: 2px solid var(--white);
     font-weight: 700;
     text-transform: uppercase;
@@ -218,8 +218,8 @@ nav a i {
 
 #joinBrokerBtn:hover {
     background-color: var(--white);
-    color: var(--accent-orange);
-    border-color: var(--accent-orange);
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
     transform: translateY(-2px);
 }
 

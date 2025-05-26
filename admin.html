@@ -297,33 +297,51 @@
             dashboardSection.style.display = 'none';
         }
 
+        // Check if a user has admin privileges
+        async function checkAdminPrivileges(user) {
+            if (!user) return false;
+            try {
+                const adminRef = doc(db, 'admin_users', user.uid);
+                const adminDoc = await getDoc(adminRef);
+                return adminDoc.exists() && adminDoc.data().isAdmin === true;
+            } catch (error) {
+                console.error('Error checking admin privileges:', error);
+                return false;
+            }
+        }
+
         // Listen for auth state
-        onAuthStateChanged(auth, user => {
-            if (user && user.email === 'grett.carson@gmail.com') {
-                showDashboard();
+        onAuthStateChanged(auth, async user => {
+            if (user) {
+                const isAdmin = await checkAdminPrivileges(user);
+                if (isAdmin) {
+                    showDashboard();
+                } else {
+                    // If a non-admin user is logged in, sign them out and show error
+                    await signOut(auth);
+                    loginMessage.textContent = 'Access denied. Only administrators can access this page.';
+                    showLogin();
+                }
             } else {
                 showLogin();
-                if (user) {
-                    // If a non-admin user is logged in, sign them out and show error
-                    signOut(auth);
-                    loginMessage.textContent = 'Access denied. Only administrators can access this page.';
-                }
             }
         });
 
         // Login form submit
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            loginMessage.textContent = '';
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
             
-            if (email !== 'grett.carson@gmail.com') {
-                loginMessage.textContent = 'Access denied. Only administrators can access this page.';
-                return;
-            }
-            
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const isAdmin = await checkAdminPrivileges(userCredential.user);
+                
+                if (!isAdmin) {
+                    await signOut(auth);
+                    loginMessage.textContent = 'Access denied. Only administrators can access this page.';
+                }
             } catch (err) {
                 loginMessage.textContent = 'Login failed: ' + err.message;
             }
