@@ -212,41 +212,29 @@ nav a i {
 /* Special styling for the broker join button */
 #joinBrokerBtn {
     background-color: var(--accent-blue);
-    border: 2px solid var(--white);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    border: 2px solid var(--accent-blue);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.3px;
     box-sizing: border-box;
-    z-index: 1000;
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    padding: 0.8rem 1.6rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
     white-space: nowrap;
-    backdrop-filter: blur(10px);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    }
-    50% {
-        box-shadow: 0 4px 20px rgba(74, 144, 226, 0.5);
-    }
+    margin-left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 #joinBrokerBtn:hover {
     background-color: var(--white);
     color: var(--accent-blue);
     border-color: var(--accent-blue);
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
-    animation: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 /* Special styling for the Start Saving button */
@@ -773,11 +761,12 @@ footer {
     }
     
     #joinBrokerBtn {
-        top: 1rem;
-        right: 1rem;
-        padding: 0.7rem 1.3rem;
-        font-size: 0.8rem;
-        border-radius: 6px;
+        margin-left: 0;
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
     }
 }
 
