@@ -268,8 +268,8 @@
     </footer>
     <script type="module">
         import { auth, db } from './app.js';
-        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+        import { createUserWithEmailAndPassword, setDoc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
+        import { collection, doc } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
         const brokerForm = document.getElementById('brokerForm');
         const formMessage = document.getElementById('formMessage');
@@ -352,9 +352,14 @@
             
             try {
                 // Create Firebase Auth user
-                await createUserWithEmailAndPassword(auth, data.email, password);
-                // Save broker application to Firestore
-                await addDoc(collection(db, 'brokers_pending'), data);
+                const userCredential = await createUserWithEmailAndPassword(auth, data.email, password);
+                
+                // Save broker application to Firestore using their email as the document ID
+                await setDoc(doc(db, 'brokers_pending', data.email), {
+                    ...data,
+                    userId: userCredential.user.uid  // Store their Firebase Auth user ID
+                });
+                
                 brokerForm.reset();
                 formMessage.textContent = 'Thanks! Your request is under review.';
                 brokerForm.style.display = 'none';

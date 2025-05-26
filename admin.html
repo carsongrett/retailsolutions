@@ -237,7 +237,8 @@
         import { 
             signInWithEmailAndPassword,
             signOut,
-            onAuthStateChanged 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword
         } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-auth.js";
         import { 
             collection,
@@ -521,15 +522,33 @@
                 const brokerData = docSnap.data();
                 
                 if (!brokerData) throw new Error('Broker not found');
+
+                // Get or create the broker's Firebase Auth account
+                let userCredential;
+                try {
+                    // Try to create new user
+                    userCredential = await createUserWithEmailAndPassword(auth, brokerData.email, generateTempPassword());
+                } catch (error) {
+                    if (error.code === 'auth/email-already-in-use') {
+                        // If user exists, get their user record
+                        const userRecord = await auth.getUserByEmail(brokerData.email);
+                        userCredential = { user: userRecord };
+                    } else {
+                        throw error;
+                    }
+                }
                 
-                await setDoc(doc(db, 'brokers', id), {
+                // Save broker data using their Firebase Auth user ID
+                await setDoc(doc(db, 'brokers', userCredential.user.uid), {
                     ...brokerData,
                     status: 'approved',
                     approvedAt: serverTimestamp()
                 });
+
+                // Delete the pending document
                 await deleteDoc(docRef);
                 
-                alert('Broker approved successfully!');
+                alert('Broker approved successfully! They can now log in with their email address.');
                 loadBrokerRequests();
                 loadApprovedBrokers();
                 
@@ -539,6 +558,17 @@
                 console.error('Error approving broker:', err);
                 throw err;
             }
+        }
+
+        // Helper function to generate a temporary password
+        function generateTempPassword() {
+            const length = 12;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            return password;
         }
 
         // Reject broker
